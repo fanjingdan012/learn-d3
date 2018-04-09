@@ -20,7 +20,7 @@ body{
 background-color:white
 }
 </style>
-<img style="width:0;height:0;display:none;visibility:hidden;" src="./堆栈图_files/saved_resource"></head> 
+</head> 
 <body>  
 	<script src="./堆栈图_files/d3.v3.min.js.download" charset="utf-8"></script> 
 	<script>
@@ -36,12 +36,42 @@ background-color:white
 	//1. 确定初始数据
 	var dataset = [
         { name: "PC" , 
-		  sales: [	{ year:2005, profit: 3000 },
+		  sales: [	{ year:2005, profit: 10000 },
 					{ year:2006, profit: 1300 },
 					{ year:2007, profit: 3700 },
 					{ year:2008, profit: 4900 },
 					{ year:2009, profit: 700 },
+					{ year:2011, profit: 1800 }] },
+		{ name: "SmartPhone" , 
+		  sales: [	{ year:2005, profit: 2000 },
+					{ year:2006, profit: 4000 },
+					{ year:2007, profit: 1810 },
+					{ year:2008, profit: 6540 },
+					{ year:2009, profit: 2820 },
 					{ year:2011, profit: 700 }] },
+		{ name: "Software" , 
+		  sales: [	{ year:2005, profit: 1100 },
+					{ year:2006, profit: 1700 },
+					{ year:2007, profit: 1680 },
+					{ year:2008, profit: 4000 },
+					{ year:2009, profit: 4900 },
+					{ year:2011, profit: 700 }] },
+		{ name: "Software1" , 
+		  sales: [	{ year:2005, profit: 1100 },
+					{ year:2006, profit: 1700 },
+					{ year:2007, profit: 1680 },
+					{ year:2008, profit: 4000 },
+					{ year:2009, profit: 4900 },
+					{ year:2011, profit: 700 }] }
+    ];
+	var dataset2 = [
+        { name: "PC" , 
+		  sales: [	{ year:2005, profit: 5000 },
+					{ year:2006, profit: 1300 },
+					{ year:2007, profit: 3700 },
+					{ year:2008, profit: 4900 },
+					{ year:2009, profit: 700 },
+					{ year:2011, profit: 1800 }] },
 		{ name: "SmartPhone" , 
 		  sales: [	{ year:2005, profit: 2000 },
 					{ year:2006, profit: 4000 },
@@ -71,9 +101,13 @@ background-color:white
 					.values(function(d){ return d.sales; })
 					.x(function(d){ return d.year; })
 					.y(function(d){ return d.profit; });
+var stack2 = d3.layout.stack()
+					.values(function(d){ return d.sales; })
+					.x(function(d){ return d.year; })
+					.y(function(d){ return d.profit; });
 
 	var data = stack(dataset);
-
+var data2 = stack2(dataset2)
 	console.log(data);
 		
 		
@@ -113,9 +147,22 @@ background-color:white
 					.enter()
 					.append("g")
 					.style("fill",function(d,i){ return color(i); });
-		
+		var groups2 = svg.selectAll("g")
+					.data(data2)
+					.enter()
+					.append("g")
+					.style("fill",function(d,i){ return color(i); });	
 	//添加矩形
 	var rects = groups.selectAll("rect")
+					.data(function(d){ return d.sales; })
+					.enter()
+					.append("rect")
+					.attr("x",function(d){ return xScale(d.year); })
+					.attr("y",function(d){ return yRangeWidth - yScale( d.y0 + d.y ); })
+					.attr("width",function(d){ return xScale.rangeBand(); })
+					.attr("height",function(d){ return yScale(d.y); })
+					.attr("transform","translate(" + padding.left + "," + padding.top + ")");
+	var rects2 = groups2.selectAll("rect")
 					.data(function(d){ return d.sales; })
 					.enter()
 					.append("rect")
@@ -164,4 +211,4 @@ background-color:white
 </script>
   
   
-<img style="width:0;height:0;display:none;visibility:hidden;" src="./堆栈图_files/saved_resource(1)"><img style="width:0;height:0;display:none;visibility:hidden;" src="./堆栈图_files/saved_resource(2)"><script type="text/javascript" src="./堆栈图_files/get"></script><img style="width:0;height:0;display:none;visibility:hidden;" src="./堆栈图_files/saved_resource(3)"></body></html>
+</body></html>
