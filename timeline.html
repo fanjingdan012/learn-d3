@@ -3,8 +3,8 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>Chronological Diagram of Asia</title>
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js"></script>
+    <title>Chronological Diagram</title>
+    <script type="text/javascript" src="https://d3js.org/d3.v2.js"></script>
     <style type="text/css">
     .chart {
         shape-rendering: crispEdges;
@@ -64,7 +64,7 @@
 <body>
     <script type="text/javascript">
     //data
-    var lanes = ["Chinese", "Japanese", "中东", "历代哈里发", "历代伊玛目", "历代达赖", "历代班禅","德国","德国人","法国","法国人"],
+    var lanes = ["中国", "日本", "中东", "历代哈里发", "历代伊玛目", "历代达赖", "历代班禅","德国","德国人","法国","法国人"],
         laneLength = lanes.length,
         items = [
             { "lane": 0, "id": "Qin", "start": 5, "end": 205 },
@@ -243,9 +243,17 @@
             { "lane": 8, "id": "腓特烈大帝(腓特烈二世)", "start": 1712, "end": 1786},
             { "lane": 8, "id": "威廉一世", "start": 1797, "end": 1888},
             { "lane": 8, "id": "威廉二世", "start": 1859, "end": 1941},
+			{ "lane": 9, "id": "加洛林王朝", "start": 751, "end": 911 },
+			{ "lane": 9, "id": "卡佩王朝", "start": 987, "end": 1328 },
+			{ "lane": 9, "id": "瓦卢瓦王朝", "start": 1328, "end": 1589 },
+			{ "lane": 9, "id": "百年英法战争", "start": 1337, "end": 1453 },
+			{ "lane": 9, "id": "波旁王朝", "start": 1555, "end": 1848 },
+			{ "lane": 10, "id": "威廉一世", "start": 1028, "end": 1087 },
+			{ "lane": 10, "id": "腓力二世·奥古斯都", "start": 1165, "end": 1223 },
+			
             { "lane": 10, "id": "拿破仑", "start": 1769 , "end": 1821}
         ],
-        timeBegin = 0,
+        timeBegin = -10,
         timeEnd = 2000;
     </script>
     <script type="text/javascript">
@@ -306,7 +314,7 @@
     }
     var m = [20, 15, 15, 120], //top right bottom left
         w = 1280 - m[1] - m[3],
-        h = 1000 - m[0] - m[2],
+        h = 2000 - m[0] - m[2],
         miniHeight = groupsLength * 12 + 50,
         mainHeight = h - miniHeight - 50;
 
