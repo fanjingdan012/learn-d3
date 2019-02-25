@@ -2,496 +2,573 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>Chronological Diagram</title>
-    <script type="text/javascript" src="https://d3js.org/d3.v2.js"></script>
-    <style type="text/css">
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Chronological Diagram</title>
+  <script type="text/javascript" src="https://d3js.org/d3.v2.js"></script>
+  <style type="text/css">
     .chart {
-        shape-rendering: crispEdges;
+      shape-rendering: crispEdges;
     }
 
     .mini text {
-        font: 9px sans-serif;
+      font: 9px sans-serif;
     }
 
     .main text {
-        font: 12px sans-serif;
+      font: 12px sans-serif;
     }
 
     .miniItem0 {
-        fill: darksalmon;
-        stroke-width: 6;
+      fill: darksalmon;
+      stroke-width: 6;
     }
 
     .miniItem1 {
-        fill: darkolivegreen;
-        fill-opacity: .7;
-        stroke-width: 6;
+      fill: darkolivegreen;
+      fill-opacity: .7;
+      stroke-width: 6;
     }
 
     .miniItem2 {
-        fill: slategray;
-        fill-opacity: .7;
-        stroke-width: 6;
+      fill: slategray;
+      fill-opacity: .7;
+      stroke-width: 6;
     }
 
     .miniItem {
-        fill: darksalmon;
-        fill-opacity: .5;
-        stroke-width: 0.5;
-        stroke: black;
+      fill: darksalmon;
+      fill-opacity: .5;
+      stroke-width: 0.5;
+      stroke: black;
     }
 
     .brush .extent {
-        stroke: gray;
-        fill: dodgerblue;
-        fill-opacity: .365;
+      stroke: gray;
+      fill: dodgerblue;
+      fill-opacity: .365;
     }
 
     .axis path,
     .axis line {
-        fill: none;
-        stroke: black;
-        shape-rendering: crispEdges;
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
     }
 
     .axis text {
-        font-size: 11px;
+      font-size: 11px;
     }
-    </style>
+  </style>
 </head>
 
 <body>
-    <script type="text/javascript">
+  <script type="text/javascript">
     //data
-    var lanes = ["中国", "日本", "中东", "历代哈里发", "历代伊玛目", "历代达赖", "历代班禅","德国","德国人","法国","法国人"],
-        laneLength = lanes.length,
-        items = [
-            { "lane": 0, "id": "Qin", "start": 5, "end": 205 },
-            { "lane": 0, "id": "Jin", "start": 265, "end": 420 },
-            { "lane": 0, "id": "Sui", "start": 580, "end": 615 },
-            { "lane": 0, "id": "Tang", "start": 620, "end": 900 },
-            { "lane": 0, "id": "Song", "start": 960, "end": 1265 },
-            { "lane": 0, "id": "Yuan", "start": 1270, "end": 1365 },
-            { "lane": 0, "id": "Ming", "start": 1370, "end": 1640 },
-            { "lane": 0, "id": "Qing", "start": 1645, "end": 1910 },
-            { "lane": 1, "id": "Yamato", "start": 300, "end": 530 },
-            { "lane": 1, "id": "Asuka", "start": 550, "end": 700 },
-            { "lane": 1, "id": "Nara", "start": 710, "end": 790 },
-            { "lane": 1, "id": "Heian", "start": 800, "end": 1180 },
-            { "lane": 1, "id": "Kamakura", "start": 1190, "end": 1330 },
-            { "lane": 1, "id": "Muromachi", "start": 1340, "end": 1560 },
-            { "lane": 1, "id": "Edo", "start": 1610, "end": 1860 },
-            { "lane": 1, "id": "Meiji", "start": 1870, "end": 1900 },
-            { "lane": 1, "id": "Taisho", "start": 1910, "end": 1920 },
-            { "lane": 1, "id": "Showa", "start": 1925, "end": 1985 },
-            { "lane": 1, "id": "Heisei", "start": 1990, "end": 1995 },
-            { "lane": 2, "id": "四大哈里发", "start": 632, "end": 661 },
-            { "lane": 2, "id": "倭马亚王朝", "start": 661, "end": 750 },
-            { "lane": 2, "id": "阿拔斯王朝", "start": 750, "end": 1258 },
-            { "lane": 2, "id": "马木留克王朝", "start": 1250, "end": 1517 },
-            { "lane": 2, "id": "奥斯曼帝国", "start": 1517, "end": 1924 },
-            { "lane": 4, "id": "1阿里·本·阿比·塔利卜", "start": 600, "end": 661 },
-            { "lane": 4, "id": "2哈桑·本·阿里·本·阿比·塔利卜", "start": 624, "end": 670 },
-            { "lane": 4, "id": "3侯赛因·本·阿里·本·阿比·塔利卜", "start": 626, "end": 680 },
-            { "lane": 4, "id": "4阿里·本·侯赛因·本·阿里", "start": 658, "end": 712 },
-            { "lane": 4, "id": "5穆罕默德·本·阿里·本·侯赛因", "start": 677, "end": 732 },
-            { "lane": 4, "id": "6贾法尔·本·穆罕默德·本·阿里", "start": 702, "end": 765 },
-            { "lane": 4, "id": "7穆萨·本·贾法尔·本·穆罕默德", "start": 744, "end": 799 },
-            { "lane": 4, "id": "8阿里·本·穆萨·本·贾法尔", "start": 765, "end": 817 },
-            { "lane": 4, "id": "9穆罕默德·本·阿里·本·穆萨", "start": 810, "end": 835 },
-            { "lane": 4, "id": "10阿里·本·穆罕默德·本·阿里", "start": 827, "end": 868 },
-            { "lane": 4, "id": "11哈桑·本·阿里·本·穆罕默德", "start": 846, "end": 874 },
-            { "lane": 4, "id": "12穆罕默德·本·哈桑·本·阿里", "start": 868, "end": 869 },
-            { "lane": 3, "id": "阿布·伯克尔", "start": 632, "end": 634 },
-            { "lane": 3, "id": "欧麦尔·本·赫塔卜", "start": 634, "end": 644 },
-            { "lane": 3, "id": "奥斯曼·本·阿凡", "start": 644, "end": 656 },
-            { "lane": 3, "id": "阿里·本·阿比·塔利卜", "start": 656, "end": 661 },
-            { "lane": 3, "id": "穆阿威叶一世", "start": 661, "end": 680 },
-            { "lane": 3, "id": "耶齐德一世", "start": 680, "end": 683 },
-            { "lane": 3, "id": "穆阿威叶二世", "start": 683, "end": 684 },
-            { "lane": 3, "id": "马尔万一世", "start": 684, "end": 685 },
-            { "lane": 3, "id": "阿卜杜勒-马利克", "start": 685, "end": 705 },
-            { "lane": 3, "id": "瓦利德一世", "start": 705, "end": 715 },
-            { "lane": 3, "id": "苏莱曼一世", "start": 715, "end": 717 },
-            { "lane": 3, "id": "欧麦尔二世", "start": 717, "end": 720 },
-            { "lane": 3, "id": "耶齐德二世", "start": 720, "end": 724 },
-            { "lane": 3, "id": "希沙姆一世", "start": 724, "end": 743 },
-            { "lane": 3, "id": "瓦利德二世", "start": 743, "end": 744 },
-            { "lane": 3, "id": "叶齐德三世", "start": 744, "end": 744 },
-            { "lane": 3, "id": "易卜拉欣", "start": 744, "end": 744 },
-            { "lane": 3, "id": "马尔万二世", "start": 744, "end": 750 },
-            { "lane": 3, "id": "阿布·阿拔斯-萨法赫", "start": 750, "end": 754 },
-            { "lane": 3, "id": "曼苏尔", "start": 754, "end": 775 },
-            { "lane": 3, "id": "迈赫迪", "start": 775, "end": 785 },
-            { "lane": 3, "id": "哈迪", "start": 785, "end": 786 },
-            { "lane": 3, "id": "哈伦·拉希德", "start": 786, "end": 809 },
-            { "lane": 3, "id": "阿明", "start": 809, "end": 813 },
-            { "lane": 3, "id": "马蒙", "start": 813, "end": 833 },
-            { "lane": 3, "id": "穆阿台绥姆", "start": 833, "end": 842 },
-            { "lane": 3, "id": "瓦提克", "start": 842, "end": 847 },
-            { "lane": 3, "id": "穆塔瓦基勒", "start": 847, "end": 861 },
-            { "lane": 3, "id": "蒙塔塞尔", "start": 861, "end": 862 },
-            { "lane": 3, "id": "穆斯塔因", "start": 862, "end": 866 },
-            { "lane": 3, "id": "穆阿台兹", "start": 866, "end": 869 },
-            { "lane": 3, "id": "穆赫塔迪", "start": 869, "end": 870 },
-            { "lane": 3, "id": "穆阿台米德", "start": 870, "end": 892 },
-            { "lane": 3, "id": "穆阿台迪德", "start": 892, "end": 902 },
-            { "lane": 3, "id": "穆克塔菲", "start": 902, "end": 908 },
-            { "lane": 3, "id": "穆克塔迪尔", "start": 908, "end": 932 },
-            { "lane": 3, "id": "卡希尔", "start": 932, "end": 934 },
-            { "lane": 3, "id": "拉迪", "start": 934, "end": 940 },
-            { "lane": 3, "id": "穆塔基", "start": 940, "end": 944 },
-            { "lane": 3, "id": "穆斯塔克菲", "start": 944, "end": 946 },
-            { "lane": 3, "id": "穆提", "start": 946, "end": 974 },
-            { "lane": 3, "id": "塔伊", "start": 974, "end": 991 },
-            { "lane": 3, "id": "卡迪尔", "start": 991, "end": 1031 },
-            { "lane": 3, "id": "卡伊姆", "start": 1031, "end": 1075 },
-            { "lane": 3, "id": "穆克塔迪", "start": 1075, "end": 1094 },
-            { "lane": 3, "id": "穆斯塔齐尔", "start": 1094, "end": 1118 },
-            { "lane": 3, "id": "穆斯塔尔希德", "start": 1118, "end": 1135 },
-            { "lane": 3, "id": "赖世德", "start": 1135, "end": 1136 },
-            { "lane": 3, "id": "穆克塔菲", "start": 1136, "end": 1160 },
-            { "lane": 3, "id": "穆斯坦吉德", "start": 1160, "end": 1170 },
-            { "lane": 3, "id": "穆斯塔迪", "start": 1170, "end": 1180 },
-            { "lane": 3, "id": "安-纳赛尔", "start": 1180, "end": 1225 },
-            { "lane": 3, "id": "查希尔", "start": 1225, "end": 1226 },
-            { "lane": 3, "id": "穆斯坦绥尔", "start": 1226, "end": 1242 },
-            { "lane": 3, "id": "穆斯台绥木", "start": 1242, "end": 1258 },
-            { "lane": 3, "id": "穆斯坦绥尔", "start": 1261, "end": 1261 },
-            { "lane": 3, "id": "哈基姆一世", "start": 1262, "end": 1302 },
-            { "lane": 3, "id": "穆斯塔克菲一世", "start": 1302, "end": 1340 },
-            { "lane": 3, "id": "瓦提克一世", "start": 1340, "end": 1341 },
-            { "lane": 3, "id": "哈基姆二世", "start": 1341, "end": 1352 },
-            { "lane": 3, "id": "穆塔迪德一世", "start": 1352, "end": 1362 },
-            { "lane": 3, "id": "穆塔瓦基勒一世", "start": 1362, "end": 1383 },
-            { "lane": 3, "id": "瓦提克二世", "start": 1383, "end": 1386 },
-            { "lane": 3, "id": "穆阿台绥姆", "start": 1386, "end": 1389 },
-            { "lane": 3, "id": "穆塔瓦基勒一世(复位)", "start": 1389, "end": 1406 },
-            { "lane": 3, "id": "穆斯塔因", "start": 1406, "end": 1414 },
-            { "lane": 3, "id": "穆塔迪德二世", "start": 1414, "end": 1441 },
-            { "lane": 3, "id": "穆斯塔克菲二世", "start": 1441, "end": 1451 },
-            { "lane": 3, "id": "卡伊姆(Al-Qa'im)", "start": 1451, "end": 1455 },
-            { "lane": 3, "id": "穆斯坦吉德", "start": 1455, "end": 1479 },
-            { "lane": 3, "id": "穆塔瓦基勒二世", "start": 1479, "end": 1497 },
-            { "lane": 3, "id": "穆斯塔姆西克", "start": 1497, "end": 1508 },
-            { "lane": 3, "id": "穆塔瓦基勒三世", "start": 1508, "end": 1517 },
-            { "lane": 3, "id": "塞利姆一世", "start": 1517, "end": 1520 },
-            { "lane": 3, "id": "苏莱曼一世", "start": 1520, "end": 1566 },
-            { "lane": 3, "id": "塞利姆二世", "start": 1566, "end": 1574 },
-            { "lane": 3, "id": "穆拉德三世", "start": 1574, "end": 1595 },
-            { "lane": 3, "id": "穆罕默德三世", "start": 1595, "end": 1603 },
-            { "lane": 3, "id": "艾哈迈德一世", "start": 1603, "end": 1617 },
-            { "lane": 3, "id": "穆斯塔法一世（第一次）", "start": 1617, "end": 1618 },
-            { "lane": 3, "id": "奥斯曼二世", "start": 1618, "end": 1622 },
-            { "lane": 3, "id": "穆斯塔法一世（第二次）", "start": 1622, "end": 1623 },
-            { "lane": 3, "id": "穆拉德四世", "start": 1623, "end": 1640 },
-            { "lane": 3, "id": "易卜拉欣", "start": 1640, "end": 1648 },
-            { "lane": 3, "id": "穆罕默德四世", "start": 1648, "end": 1687 },
-            { "lane": 3, "id": "苏莱曼二世", "start": 1687, "end": 1691 },
-            { "lane": 3, "id": "艾哈迈德二世", "start": 1691, "end": 1695 },
-            { "lane": 3, "id": "穆斯塔法二世", "start": 1695, "end": 1703 },
-            { "lane": 3, "id": "艾哈迈德三世", "start": 1703, "end": 1730 },
-            { "lane": 3, "id": "马哈茂德一世", "start": 1730, "end": 1754 },
-            { "lane": 3, "id": "奥斯曼三世", "start": 1754, "end": 1757 },
-            { "lane": 3, "id": "穆斯塔法三世", "start": 1757, "end": 1774 },
-            { "lane": 3, "id": "阿卜杜勒-哈米德一世", "start": 1774, "end": 1789 },
-            { "lane": 3, "id": "塞利姆三世", "start": 1789, "end": 1807 },
-            { "lane": 3, "id": "穆斯塔法四世", "start": 1807, "end": 1808 },
-            { "lane": 3, "id": "马哈茂德二世", "start": 1808, "end": 1839 },
-            { "lane": 3, "id": "阿卜杜勒-迈吉德一世", "start": 1839, "end": 1861 },
-            { "lane": 3, "id": "阿卜杜勒-阿齐兹一世", "start": 1861, "end": 1876 },
-            { "lane": 3, "id": "穆拉德五世", "start": 1876, "end": 1876 },
-            { "lane": 3, "id": "阿卜杜勒-哈米德二世", "start": 1876, "end": 1909 },
-            { "lane": 3, "id": "穆罕默德五世", "start": 1909, "end": 1018 },
-            { "lane": 3, "id": "穆罕默德六世", "start": 1918, "end": 1922 },
-            { "lane": 3, "id": "阿卜杜勒-迈吉德二世", "start": 1922, "end": 1924 },
-            { "lane": 5, "id": "1-根敦朱巴", "start": 1391, "end": 1474 },
-            { "lane": 5, "id": "2-根敦嘉措", "start": 1475, "end": 1542 },
-            { "lane": 5, "id": "3-索南嘉措", "start": 1543, "end": 1588 },
-            { "lane": 5, "id": "4-云丹嘉措", "start": 1589, "end": 1617 },
-            { "lane": 5, "id": "5-罗桑嘉措", "start": 1617, "end": 1682 },
-            { "lane": 5, "id": "6-仓央嘉措", "start": 1683, "end": 1706 },
-            { "lane": 5, "id": "7-格桑嘉措", "start": 1707, "end": 1757 },
-            { "lane": 5, "id": "8-强白嘉措", "start": 1758, "end": 1804 },
-            { "lane": 5, "id": "9-隆朵嘉措", "start": 1805, "end": 1815 },
-            { "lane": 5, "id": "10-楚臣嘉措", "start": 1816, "end": 1837 },
-            { "lane": 5, "id": "11-凯珠嘉措", "start": 1838, "end": 1856 },
-            { "lane": 5, "id": "12-成烈嘉措", "start": 1857, "end": 1875 },
-            { "lane": 5, "id": "13-图登嘉措", "start": 1876, "end": 1933 },
-            { "lane": 5, "id": "14-丹增嘉措", "start": 1935, "end": 2018 },
-            { "lane": 6, "id": "1-克珠杰·格勒巴桑", "start": 1385, "end": 1438 },
-            { "lane": 6, "id": "2-索南却朗", "start": 1438, "end": 1505 },
-            { "lane": 6, "id": "3-罗桑丹珠", "start": 1505, "end": 1568 },
-            { "lane": 6, "id": "4-罗桑却吉坚赞", "start": 1570, "end": 1662 },
-            { "lane": 6, "id": "5-罗桑意希", "start": 1663, "end": 1737 },
-            { "lane": 6, "id": "6-罗桑华丹益希", "start": 1738, "end": 1780 },
-            { "lane": 6, "id": "7-敦贝尼玛", "start": 1782, "end": 1853 },
-            { "lane": 6, "id": "8-敦丹汪曲", "start": 1855, "end": 1882 },
-            { "lane": 6, "id": "9-确吉尼玛", "start": 1883, "end": 1937 },
-            { "lane": 6, "id": "10-确吉坚赞", "start": 1938, "end": 1989 },
-            { "lane": 6, "id": "11-确吉杰布", "start": 1990, "end": 2018 },
-            { "lane": 7, "id": "加洛林王朝", "start": 751, "end": 911 },
-            { "lane": 7, "id": "萨克森王朝", "start": 919, "end": 1024 },
-            
-            { "lane": 8, "id": "矮子丕平（三世）", "start": 714, "end": 768 },
-            { "lane": 8, "id": "查理大帝", "start": 742, "end": 814 },
-            { "lane": 8, "id": "奥托大帝（一世）", "start": 936, "end": 973 },
-            { "lane": 8, "id": "巴巴罗萨", "start": 1122, "end": 1190 },
-            { "lane": 8, "id": "狮子亨利", "start": 1129, "end": 1195 },
-            { "lane": 8, "id": "腓特烈二世", "start": 1208, "end": 1250},
-            { "lane": 8, "id": "腓特烈大帝(腓特烈二世)", "start": 1712, "end": 1786},
-            { "lane": 8, "id": "威廉一世", "start": 1797, "end": 1888},
-            { "lane": 8, "id": "威廉二世", "start": 1859, "end": 1941},
-			{ "lane": 9, "id": "加洛林王朝", "start": 751, "end": 911 },
-			{ "lane": 9, "id": "卡佩王朝", "start": 987, "end": 1328 },
-			{ "lane": 9, "id": "瓦卢瓦王朝", "start": 1328, "end": 1589 },
-			{ "lane": 9, "id": "百年英法战争", "start": 1337, "end": 1453 },
-			{ "lane": 9, "id": "波旁王朝", "start": 1555, "end": 1848 },
-			{ "lane": 10, "id": "威廉一世", "start": 1028, "end": 1087 },
-			{ "lane": 10, "id": "腓力二世·奥古斯都", "start": 1165, "end": 1223 },
-			
-            { "lane": 10, "id": "拿破仑", "start": 1769 , "end": 1821}
-        ],
-        timeBegin = -10,
-        timeEnd = 2000;
-    </script>
-    <script type="text/javascript">
-    function groupOverlapForLane(items,lane){
-        var aGroups = [];
-        var aOtherGroup = [];
-        for(var i = 0;i< items.length;i++){
-            if(items[i].lane==lane){
-                aOtherGroup.push(items[i]);
-            }
-        }
-        var hasOverlap;
-        while(aOtherGroup.length>0){
-            var aCurrGroup=[];
-            for(var i = 0;i< aOtherGroup.length;i++){
-                hasOverlap=false;
-                for(var j = 0;j< aCurrGroup.length;j++){
-                    if(aOtherGroup[i].end<=aCurrGroup[j].start||aOtherGroup[i].start>=aCurrGroup[j].end){//not overlap
-                        
-                    }else{
-                        //alert(aOtherGroup[i].id+aCurrGroup[j].id);
-                        hasOverlap=true;
-                        break;
-                    }
-                }
-                if(!hasOverlap){
-                    aOtherGroup[i].group=aGroups.length;
-                    aCurrGroup.push(aOtherGroup[i]);
-                    aOtherGroup.splice(i,1);
-                    i--;
-                }
+    var lanes = ["中国", "日本", "中东", "历代哈里发", "历代伊玛目", "历代达赖", "历代班禅", "德国", "德国人", "法国", "法国人", "意大利", "意大利人"],
+      laneLength = lanes.length,
+      items = [
+        { "lane": 0, "id": "西周", "start": -1000, "end": -771 },
+        { "lane": 0, "id": "春秋", "start": -770, "end": -476 },
+        { "lane": 0, "id": "战国", "start": -475, "end": -221 },
+        { "lane": 0, "id": "秦", "start": -221, "end": -206 },
+        { "lane": 0, "id": "汉", "start": -202, "end": 220 },
+        { "lane": 0, "id": "晋", "start": 265, "end": 420 },
+        { "lane": 0, "id": "隋", "start": 580, "end": 615 },
+        { "lane": 0, "id": "唐", "start": 620, "end": 900 },
+        { "lane": 0, "id": "宋", "start": 960, "end": 1265 },
+        { "lane": 0, "id": "元", "start": 1270, "end": 1365 },
+        { "lane": 0, "id": "明", "start": 1370, "end": 1640 },
+        { "lane": 0, "id": "清", "start": 1645, "end": 1910 },
+        { "lane": 1, "id": "Yamato", "start": 300, "end": 530 },
+        { "lane": 1, "id": "Asuka", "start": 550, "end": 700 },
+        { "lane": 1, "id": "Nara", "start": 710, "end": 790 },
+        { "lane": 1, "id": "Heian", "start": 800, "end": 1180 },
+        { "lane": 1, "id": "Kamakura", "start": 1190, "end": 1330 },
+        { "lane": 1, "id": "Muromachi", "start": 1340, "end": 1560 },
+        { "lane": 1, "id": "Edo", "start": 1610, "end": 1860 },
+        { "lane": 1, "id": "Meiji", "start": 1870, "end": 1900 },
+        { "lane": 1, "id": "Taisho", "start": 1910, "end": 1920 },
+        { "lane": 1, "id": "Showa", "start": 1925, "end": 1985 },
+        { "lane": 1, "id": "Heisei", "start": 1990, "end": 1995 },
+        { "lane": 2, "id": "四大哈里发", "start": 632, "end": 661 },
+        { "lane": 2, "id": "倭马亚王朝", "start": 661, "end": 750 },
+        { "lane": 2, "id": "阿拔斯王朝", "start": 750, "end": 1258 },
+        { "lane": 2, "id": "马木留克王朝", "start": 1250, "end": 1517 },
+        { "lane": 2, "id": "奥斯曼帝国", "start": 1517, "end": 1924 },
+        { "lane": 4, "id": "1阿里·本·阿比·塔利卜", "start": 600, "end": 661 },
+        { "lane": 4, "id": "2哈桑·本·阿里·本·阿比·塔利卜", "start": 624, "end": 670 },
+        { "lane": 4, "id": "3侯赛因·本·阿里·本·阿比·塔利卜", "start": 626, "end": 680 },
+        { "lane": 4, "id": "4阿里·本·侯赛因·本·阿里", "start": 658, "end": 712 },
+        { "lane": 4, "id": "5穆罕默德·本·阿里·本·侯赛因", "start": 677, "end": 732 },
+        { "lane": 4, "id": "6贾法尔·本·穆罕默德·本·阿里", "start": 702, "end": 765 },
+        { "lane": 4, "id": "7穆萨·本·贾法尔·本·穆罕默德", "start": 744, "end": 799 },
+        { "lane": 4, "id": "8阿里·本·穆萨·本·贾法尔", "start": 765, "end": 817 },
+        { "lane": 4, "id": "9穆罕默德·本·阿里·本·穆萨", "start": 810, "end": 835 },
+        { "lane": 4, "id": "10阿里·本·穆罕默德·本·阿里", "start": 827, "end": 868 },
+        { "lane": 4, "id": "11哈桑·本·阿里·本·穆罕默德", "start": 846, "end": 874 },
+        { "lane": 4, "id": "12穆罕默德·本·哈桑·本·阿里", "start": 868, "end": 869 },
+        { "lane": 3, "id": "阿布·伯克尔", "start": 632, "end": 634 },
+        { "lane": 3, "id": "欧麦尔·本·赫塔卜", "start": 634, "end": 644 },
+        { "lane": 3, "id": "奥斯曼·本·阿凡", "start": 644, "end": 656 },
+        { "lane": 3, "id": "阿里·本·阿比·塔利卜", "start": 656, "end": 661 },
+        { "lane": 3, "id": "穆阿威叶一世", "start": 661, "end": 680 },
+        { "lane": 3, "id": "耶齐德一世", "start": 680, "end": 683 },
+        { "lane": 3, "id": "穆阿威叶二世", "start": 683, "end": 684 },
+        { "lane": 3, "id": "马尔万一世", "start": 684, "end": 685 },
+        { "lane": 3, "id": "阿卜杜勒-马利克", "start": 685, "end": 705 },
+        { "lane": 3, "id": "瓦利德一世", "start": 705, "end": 715 },
+        { "lane": 3, "id": "苏莱曼一世", "start": 715, "end": 717 },
+        { "lane": 3, "id": "欧麦尔二世", "start": 717, "end": 720 },
+        { "lane": 3, "id": "耶齐德二世", "start": 720, "end": 724 },
+        { "lane": 3, "id": "希沙姆一世", "start": 724, "end": 743 },
+        { "lane": 3, "id": "瓦利德二世", "start": 743, "end": 744 },
+        { "lane": 3, "id": "叶齐德三世", "start": 744, "end": 744 },
+        { "lane": 3, "id": "易卜拉欣", "start": 744, "end": 744 },
+        { "lane": 3, "id": "马尔万二世", "start": 744, "end": 750 },
+        { "lane": 3, "id": "阿布·阿拔斯-萨法赫", "start": 750, "end": 754 },
+        { "lane": 3, "id": "曼苏尔", "start": 754, "end": 775 },
+        { "lane": 3, "id": "迈赫迪", "start": 775, "end": 785 },
+        { "lane": 3, "id": "哈迪", "start": 785, "end": 786 },
+        { "lane": 3, "id": "哈伦·拉希德", "start": 786, "end": 809 },
+        { "lane": 3, "id": "阿明", "start": 809, "end": 813 },
+        { "lane": 3, "id": "马蒙", "start": 813, "end": 833 },
+        { "lane": 3, "id": "穆阿台绥姆", "start": 833, "end": 842 },
+        { "lane": 3, "id": "瓦提克", "start": 842, "end": 847 },
+        { "lane": 3, "id": "穆塔瓦基勒", "start": 847, "end": 861 },
+        { "lane": 3, "id": "蒙塔塞尔", "start": 861, "end": 862 },
+        { "lane": 3, "id": "穆斯塔因", "start": 862, "end": 866 },
+        { "lane": 3, "id": "穆阿台兹", "start": 866, "end": 869 },
+        { "lane": 3, "id": "穆赫塔迪", "start": 869, "end": 870 },
+        { "lane": 3, "id": "穆阿台米德", "start": 870, "end": 892 },
+        { "lane": 3, "id": "穆阿台迪德", "start": 892, "end": 902 },
+        { "lane": 3, "id": "穆克塔菲", "start": 902, "end": 908 },
+        { "lane": 3, "id": "穆克塔迪尔", "start": 908, "end": 932 },
+        { "lane": 3, "id": "卡希尔", "start": 932, "end": 934 },
+        { "lane": 3, "id": "拉迪", "start": 934, "end": 940 },
+        { "lane": 3, "id": "穆塔基", "start": 940, "end": 944 },
+        { "lane": 3, "id": "穆斯塔克菲", "start": 944, "end": 946 },
+        { "lane": 3, "id": "穆提", "start": 946, "end": 974 },
+        { "lane": 3, "id": "塔伊", "start": 974, "end": 991 },
+        { "lane": 3, "id": "卡迪尔", "start": 991, "end": 1031 },
+        { "lane": 3, "id": "卡伊姆", "start": 1031, "end": 1075 },
+        { "lane": 3, "id": "穆克塔迪", "start": 1075, "end": 1094 },
+        { "lane": 3, "id": "穆斯塔齐尔", "start": 1094, "end": 1118 },
+        { "lane": 3, "id": "穆斯塔尔希德", "start": 1118, "end": 1135 },
+        { "lane": 3, "id": "赖世德", "start": 1135, "end": 1136 },
+        { "lane": 3, "id": "穆克塔菲", "start": 1136, "end": 1160 },
+        { "lane": 3, "id": "穆斯坦吉德", "start": 1160, "end": 1170 },
+        { "lane": 3, "id": "穆斯塔迪", "start": 1170, "end": 1180 },
+        { "lane": 3, "id": "安-纳赛尔", "start": 1180, "end": 1225 },
+        { "lane": 3, "id": "查希尔", "start": 1225, "end": 1226 },
+        { "lane": 3, "id": "穆斯坦绥尔", "start": 1226, "end": 1242 },
+        { "lane": 3, "id": "穆斯台绥木", "start": 1242, "end": 1258 },
+        { "lane": 3, "id": "穆斯坦绥尔", "start": 1261, "end": 1261 },
+        { "lane": 3, "id": "哈基姆一世", "start": 1262, "end": 1302 },
+        { "lane": 3, "id": "穆斯塔克菲一世", "start": 1302, "end": 1340 },
+        { "lane": 3, "id": "瓦提克一世", "start": 1340, "end": 1341 },
+        { "lane": 3, "id": "哈基姆二世", "start": 1341, "end": 1352 },
+        { "lane": 3, "id": "穆塔迪德一世", "start": 1352, "end": 1362 },
+        { "lane": 3, "id": "穆塔瓦基勒一世", "start": 1362, "end": 1383 },
+        { "lane": 3, "id": "瓦提克二世", "start": 1383, "end": 1386 },
+        { "lane": 3, "id": "穆阿台绥姆", "start": 1386, "end": 1389 },
+        { "lane": 3, "id": "穆塔瓦基勒一世(复位)", "start": 1389, "end": 1406 },
+        { "lane": 3, "id": "穆斯塔因", "start": 1406, "end": 1414 },
+        { "lane": 3, "id": "穆塔迪德二世", "start": 1414, "end": 1441 },
+        { "lane": 3, "id": "穆斯塔克菲二世", "start": 1441, "end": 1451 },
+        { "lane": 3, "id": "卡伊姆(Al-Qa'im)", "start": 1451, "end": 1455 },
+        { "lane": 3, "id": "穆斯坦吉德", "start": 1455, "end": 1479 },
+        { "lane": 3, "id": "穆塔瓦基勒二世", "start": 1479, "end": 1497 },
+        { "lane": 3, "id": "穆斯塔姆西克", "start": 1497, "end": 1508 },
+        { "lane": 3, "id": "穆塔瓦基勒三世", "start": 1508, "end": 1517 },
+        { "lane": 3, "id": "塞利姆一世", "start": 1517, "end": 1520 },
+        { "lane": 3, "id": "苏莱曼一世", "start": 1520, "end": 1566 },
+        { "lane": 3, "id": "塞利姆二世", "start": 1566, "end": 1574 },
+        { "lane": 3, "id": "穆拉德三世", "start": 1574, "end": 1595 },
+        { "lane": 3, "id": "穆罕默德三世", "start": 1595, "end": 1603 },
+        { "lane": 3, "id": "艾哈迈德一世", "start": 1603, "end": 1617 },
+        { "lane": 3, "id": "穆斯塔法一世（第一次）", "start": 1617, "end": 1618 },
+        { "lane": 3, "id": "奥斯曼二世", "start": 1618, "end": 1622 },
+        { "lane": 3, "id": "穆斯塔法一世（第二次）", "start": 1622, "end": 1623 },
+        { "lane": 3, "id": "穆拉德四世", "start": 1623, "end": 1640 },
+        { "lane": 3, "id": "易卜拉欣", "start": 1640, "end": 1648 },
+        { "lane": 3, "id": "穆罕默德四世", "start": 1648, "end": 1687 },
+        { "lane": 3, "id": "苏莱曼二世", "start": 1687, "end": 1691 },
+        { "lane": 3, "id": "艾哈迈德二世", "start": 1691, "end": 1695 },
+        { "lane": 3, "id": "穆斯塔法二世", "start": 1695, "end": 1703 },
+        { "lane": 3, "id": "艾哈迈德三世", "start": 1703, "end": 1730 },
+        { "lane": 3, "id": "马哈茂德一世", "start": 1730, "end": 1754 },
+        { "lane": 3, "id": "奥斯曼三世", "start": 1754, "end": 1757 },
+        { "lane": 3, "id": "穆斯塔法三世", "start": 1757, "end": 1774 },
+        { "lane": 3, "id": "阿卜杜勒-哈米德一世", "start": 1774, "end": 1789 },
+        { "lane": 3, "id": "塞利姆三世", "start": 1789, "end": 1807 },
+        { "lane": 3, "id": "穆斯塔法四世", "start": 1807, "end": 1808 },
+        { "lane": 3, "id": "马哈茂德二世", "start": 1808, "end": 1839 },
+        { "lane": 3, "id": "阿卜杜勒-迈吉德一世", "start": 1839, "end": 1861 },
+        { "lane": 3, "id": "阿卜杜勒-阿齐兹一世", "start": 1861, "end": 1876 },
+        { "lane": 3, "id": "穆拉德五世", "start": 1876, "end": 1876 },
+        { "lane": 3, "id": "阿卜杜勒-哈米德二世", "start": 1876, "end": 1909 },
+        { "lane": 3, "id": "穆罕默德五世", "start": 1909, "end": 1018 },
+        { "lane": 3, "id": "穆罕默德六世", "start": 1918, "end": 1922 },
+        { "lane": 3, "id": "阿卜杜勒-迈吉德二世", "start": 1922, "end": 1924 },
+        { "lane": 5, "id": "1-根敦朱巴", "start": 1391, "end": 1474 },
+        { "lane": 5, "id": "2-根敦嘉措", "start": 1475, "end": 1542 },
+        { "lane": 5, "id": "3-索南嘉措", "start": 1543, "end": 1588 },
+        { "lane": 5, "id": "4-云丹嘉措", "start": 1589, "end": 1617 },
+        { "lane": 5, "id": "5-罗桑嘉措", "start": 1617, "end": 1682 },
+        { "lane": 5, "id": "6-仓央嘉措", "start": 1683, "end": 1706 },
+        { "lane": 5, "id": "7-格桑嘉措", "start": 1707, "end": 1757 },
+        { "lane": 5, "id": "8-强白嘉措", "start": 1758, "end": 1804 },
+        { "lane": 5, "id": "9-隆朵嘉措", "start": 1805, "end": 1815 },
+        { "lane": 5, "id": "10-楚臣嘉措", "start": 1816, "end": 1837 },
+        { "lane": 5, "id": "11-凯珠嘉措", "start": 1838, "end": 1856 },
+        { "lane": 5, "id": "12-成烈嘉措", "start": 1857, "end": 1875 },
+        { "lane": 5, "id": "13-图登嘉措", "start": 1876, "end": 1933 },
+        { "lane": 5, "id": "14-丹增嘉措", "start": 1935, "end": 2018 },
+        { "lane": 6, "id": "1-克珠杰·格勒巴桑", "start": 1385, "end": 1438 },
+        { "lane": 6, "id": "2-索南却朗", "start": 1438, "end": 1505 },
+        { "lane": 6, "id": "3-罗桑丹珠", "start": 1505, "end": 1568 },
+        { "lane": 6, "id": "4-罗桑却吉坚赞", "start": 1570, "end": 1662 },
+        { "lane": 6, "id": "5-罗桑意希", "start": 1663, "end": 1737 },
+        { "lane": 6, "id": "6-罗桑华丹益希", "start": 1738, "end": 1780 },
+        { "lane": 6, "id": "7-敦贝尼玛", "start": 1782, "end": 1853 },
+        { "lane": 6, "id": "8-敦丹汪曲", "start": 1855, "end": 1882 },
+        { "lane": 6, "id": "9-确吉尼玛", "start": 1883, "end": 1937 },
+        { "lane": 6, "id": "10-确吉坚赞", "start": 1938, "end": 1989 },
+        { "lane": 6, "id": "11-确吉杰布", "start": 1990, "end": 2018 },
+        { "lane": 7, "id": "加洛林王朝", "start": 751, "end": 911 },
+        { "lane": 7, "id": "萨克森王朝", "start": 919, "end": 1024 },
+        { "lane": 8, "id": "矮子丕平（三世）", "start": 714, "end": 768 },
+        { "lane": 8, "id": "查理大帝（查理曼）", "start": 742, "end": 814 },
+        { "lane": 8, "id": "路易一世（虔诚者路易）", "start": 813, "end": 840 },
+        { "lane": 8, "id": "奥托大帝（一世）", "start": 936, "end": 973 },
+        { "lane": 8, "id": "巴巴罗萨", "start": 1122, "end": 1190 },
+        { "lane": 8, "id": "狮子亨利", "start": 1129, "end": 1195 },
+        { "lane": 8, "id": "腓特烈二世", "start": 1208, "end": 1250 },
+        { "lane": 8, "id": "腓特烈大帝(腓特烈二世)", "start": 1712, "end": 1786 },
+        { "lane": 8, "id": "威廉一世", "start": 1797, "end": 1888 },
+        { "lane": 8, "id": "威廉二世", "start": 1859, "end": 1941 },
+        { "lane": 9, "id": "加洛林王朝", "start": 751, "end": 911 },
+        { "lane": 9, "id": "卡佩王朝", "start": 987, "end": 1328 },
+        { "lane": 9, "id": "瓦卢瓦王朝", "start": 1328, "end": 1589 },
+        { "lane": 9, "id": "百年英法战争", "start": 1337, "end": 1453 },
+        { "lane": 9, "id": "波旁王朝", "start": 1555, "end": 1848 },
+        { "lane": 10, "id": "查理二世(秃头查理)", "start": 823, "end": 877 },
+        { "lane": 10, "id": "路易二世", "start": 846, "end": 879 },
+        { "lane": 10, "id": "路易三世", "start": 863, "end": 882 },
+        { "lane": 10, "id": "卡洛曼二世", "start": 866, "end": 884 },
+        { "lane": 10, "id": "查理三世(胖子查理)", "start": 839, "end": 888 },
+        { "lane": 10, "id": "厄德一世", "start": 865, "end": 898 },
+        { "lane": 10, "id": "罗贝尔一世", "start": 865, "end": 923 },
+        { "lane": 10, "id": "拉乌尔一世", "start": 890, "end": 936 },
+        { "lane": 10, "id": "路易四世(海外归来者)", "start": 920, "end": 954 },
 
-                
-            }
-            aGroups.push(aCurrGroup);
+        { "lane": 10, "id": "路易五世(懒王路易)", "start": 967, "end": 986 },
+        { "lane": 10, "id": "于格一世·卡佩", "start": 987, "end": 996 },
+        { "lane": 10, "id": "罗贝尔二世（虔诚者）", "start": 996, "end": 1031 },
+        { "lane": 10, "id": "于格二世（大帝）", "start": 1017, "end": 1025 },
+        { "lane": 10, "id": "亨利一世", "start": 1031, "end": 1060 },
+        { "lane": 10, "id": "腓力一世", "start": 1060, "end": 1108 },
+        { "lane": 10, "id": "路易六世（胖子王）", "start": 1108, "end": 1137 },
+        { "lane": 10, "id": "菲利普", "start": 1129, "end": 1087 },
+        { "lane": 10, "id": "路易七世（年轻的）", "start": 1137, "end": 1180 },
+        { "lane": 10, "id": "腓力二世", "start": 1180, "end": 1223 },
+        { "lane": 10, "id": "路易八世（狮子王）", "start": 1223, "end": 1226 },
+        { "lane": 10, "id": "（圣王）路易九世", "start": 1226, "end": 1270 },
+        { "lane": 10, "id": "腓力三世（勇敢者）", "start": 1270, "end": 1285 },
+        { "lane": 10, "id": "腓力四世（美男子）", "start": 1285, "end": 1314 },
+        { "lane": 10, "id": "路易十世（吵架王/顽固者）", "start": 1314, "end": 1316 },
+        { "lane": 10, "id": "约翰一世（遗腹子）", "start": 1316, "end": 1316 },
+        { "lane": 10, "id": "腓力五世（高大的）", "start": 1316, "end": 1322 },
+        { "lane": 10, "id": "查理四世（美男子/公正王）", "start": 1322, "end": 1328 },
+        { "lane": 10, "id": "威廉一世", "start": 1028, "end": 1087 },
+        { "lane": 10, "id": "腓力二世·奥古斯都", "start": 1165, "end": 1223 },
+        { "lane": 10, "id": "腓力六世", "start": 1328, "end": 1350 },
+        { "lane": 10, "id": "约翰二世（好人）", "start": 1350, "end": 1364 },
+        { "lane": 10, "id": "（英明的）查理五世", "start": 1364, "end": 1380 },
+        { "lane": 10, "id": "查理六世（疯子）", "start": 1380, "end": 1422 },
+        { "lane": 10, "id": "查理七世（胜利者）", "start": 1422, "end": 1461 },
+        { "lane": 10, "id": "路易十一世", "start": 1461, "end": 1483 },
+        { "lane": 10, "id": "查理八世", "start": 1483, "end": 1498 },
+        { "lane": 10, "id": "路易十二世", "start": 1498, "end": 1515 },
+        { "lane": 10, "id": "弗朗索瓦一世", "start": 1515, "end": 1547 },
+        { "lane": 10, "id": "亨利二世", "start": 1547, "end": 1559 },
+        { "lane": 10, "id": "弗朗索瓦二世", "start": 1559, "end": 1560 },
+        { "lane": 10, "id": "查理九世", "start": 1560, "end": 1574 },
+        { "lane": 10, "id": "亨利三世", "start": 1574, "end": 1589 },
+        { "lane": 10, "id": "亨里克三世 (即亨利三世)", "start": 1573, "end": 1574 },
+        { "lane": 10, "id": "（勇敢的）菲利普二世", "start": 1364, "end": 1404 },
+        { "lane": 10, "id": "无畏的约翰", "start": 1404, "end": 1419 },
+        { "lane": 10, "id": "菲利普三世（好人）", "start": 1419, "end": 1467 },
+        { "lane": 10, "id": "大胆的查理", "start": 1467, "end": 1477 },
+        { "lane": 10, "id": "勃艮第的玛丽", "start": 1477, "end": 1482 },
+        { "lane": 10, "id": "亨利四世", "start": 1589, "end": 1610 },
+        { "lane": 10, "id": "路易十三", "start": 1610, "end": 1643 },
+        { "lane": 10, "id": "路易十四", "start": 1643, "end": 1715 },
+        { "lane": 10, "id": "路易十五", "start": 1715, "end": 1774 },
+        { "lane": 10, "id": "路易十六", "start": 1774, "end": 1792 },
+        { "lane": 10, "id": "路易十七", "start": 1793, "end": 1795 },
+        { "lane": 10, "id": "路易十八", "start": 1814, "end": 1815 },
+        { "lane": 10, "id": "路易十八", "start": 1815, "end": 1824 },
+        { "lane": 10, "id": "查理十世", "start": 1824, "end": 1830 },
+        { "lane": 10, "id": "路易十九", "start": 1830, "end": 1830 },
+        { "lane": 10, "id": "拿破仑", "start": 1769, "end": 1821 },
+        { "lane": 10, "id": "贞德", "start": 1412, "end": 1431 },
+        { "lane": 11, "id": "东哥特王国", "start": 493, "end": 555 },
+        { "lane": 11, "id": "罗马帝国", "start": -27, "end": 476 },
+        { "lane": 11, "id": "东罗马帝国", "start": 395, "end": 1453 },
+        { "lane": 11, "id": "伦巴德", "start": 568, "end": 774 },
+        { "lane": 11, "id": "萨伏依王朝", "start": 493, "end": 555 },
+        { "lane": 12, "id": "凯撒", "start": -102, "end": -44 },
+        { "lane": 12, "id": "查士丁尼大帝", "start": 482, "end": 565 },
+        { "lane": 12, "id": "屋大维", "start": -60, "end": 14 },
+        { "lane": 12, "id": "达·芬奇", "start": 1452, "end": 1519 },
+        { "lane": 12, "id": "拉斐尔", "start": 1483, "end": 1520 },
+        { "lane": 12, "id": "米开朗基罗", "start": 1475, "end": 1564 },
+        { "lane": 12, "id": "埃马努埃莱二世", "start": 1849, "end": 1861 },
+        { "lane": 12, "id": "墨索里尼", "start": 1769, "end": 1821 },
+        { "lane": 12, "id": "洛泰尔一世", "start": 941, "end": 986 },
+        { "lane": 12, "id": "维托里奥·埃马努埃莱三世", "start": 1869, "end": 1947 }
+
+      ],
+      timeBegin = -1000,
+      timeEnd = 2000;
+  </script>
+  <script type="text/javascript">
+    function groupOverlapForLane(items, lane) {
+      var aGroups = [];
+      var aOtherGroup = [];
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].lane == lane) {
+          aOtherGroup.push(items[i]);
         }
-        return aGroups;
-        
+      }
+      var hasOverlap;
+      while (aOtherGroup.length > 0) {
+        var aCurrGroup = [];
+        for (var i = 0; i < aOtherGroup.length; i++) {
+          hasOverlap = false;
+          for (var j = 0; j < aCurrGroup.length; j++) {
+            if (aOtherGroup[i].end <= aCurrGroup[j].start || aOtherGroup[i].start >= aCurrGroup[j].end) {//not overlap
+
+            } else {
+              //alert(aOtherGroup[i].id+aCurrGroup[j].id);
+              hasOverlap = true;
+              break;
+            }
+          }
+          if (!hasOverlap) {
+            aOtherGroup[i].group = aGroups.length;
+            aCurrGroup.push(aOtherGroup[i]);
+            aOtherGroup.splice(i, 1);
+            i--;
+          }
+
+
+        }
+        aGroups.push(aCurrGroup);
+      }
+      return aGroups;
+
     }
     var groupsLength = 0;
-    var aLaneGroups=[];
-    var aLaneMaxGroup =[];
-    for(var i = 0;i<laneLength;i++){
-        var aGroups = groupOverlapForLane(items,i);
-        aLaneMaxGroup[i] = aGroups.length+groupsLength;
-        for(var j=0;j<aGroups.length;j++){
+    var aLaneGroups = [];
+    var aLaneMaxGroup = [];
+    for (var i = 0; i < laneLength; i++) {
+      var aGroups = groupOverlapForLane(items, i);
+      aLaneMaxGroup[i] = aGroups.length + groupsLength;
+      for (var j = 0; j < aGroups.length; j++) {
 
-            for(var k=0;k<aGroups[j].length;k++){
-                aGroups[j][k].group+=groupsLength;
-                
-                aGroups[j][k].laneMaxGroup=aLaneMaxGroup[i];
-            }
+        for (var k = 0; k < aGroups[j].length; k++) {
+          aGroups[j][k].group += groupsLength;
 
+          aGroups[j][k].laneMaxGroup = aLaneMaxGroup[i];
         }
-        groupsLength+=aGroups.length;
-        aLaneGroups.push(aGroups);
+
+      }
+      groupsLength += aGroups.length;
+      aLaneGroups.push(aGroups);
 
     }
     var m = [20, 15, 15, 120], //top right bottom left
-        w = 1280 - m[1] - m[3],
-        h = 2000 - m[0] - m[2],
-        miniHeight = groupsLength * 12 + 50,
-        mainHeight = h - miniHeight - 50;
+      w = 1280 - m[1] - m[3],
+      h = 2000 - m[0] - m[2],
+      miniHeight = groupsLength * 12 + 50,
+      mainHeight = h - miniHeight - 50;
 
     //scales
     var x = d3.scale.linear()
-        .domain([timeBegin, timeEnd])
-        .range([0, w]);
+      .domain([timeBegin, timeEnd])
+      .range([0, w]);
     var x1 = d3.scale.linear()
-        .range([0, w]);
+      .range([0, w]);
     var y1 = d3.scale.linear()
-        .domain([0, groupsLength])
-        .range([0, mainHeight]);
+      .domain([0, groupsLength])
+      .range([0, mainHeight]);
     var y2 = d3.scale.linear()
-        .domain([0, groupsLength])
-        .range([0, miniHeight]);
+      .domain([0, groupsLength])
+      .range([0, miniHeight]);
 
     var chart = d3.select("body")
-        .append("svg")
-        .attr("width", w + m[1] + m[3])
-        .attr("height", h + m[0] + m[2])
-        .attr("class", "chart");
+      .append("svg")
+      .attr("width", w + m[1] + m[3])
+      .attr("height", h + m[0] + m[2])
+      .attr("class", "chart");
 
     chart.append("defs").append("clipPath")
-        .attr("id", "clip")
-        .append("rect")
-        .attr("width", w)
-        .attr("height", mainHeight);
+      .attr("id", "clip")
+      .append("rect")
+      .attr("width", w)
+      .attr("height", mainHeight);
 
     var main = chart.append("g")
-        .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
-        .attr("width", w)
-        .attr("height", mainHeight)
-        .attr("class", "main");
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+      .attr("width", w)
+      .attr("height", mainHeight)
+      .attr("class", "main");
 
     var mini = chart.append("g")
-        .attr("transform", "translate(" + m[3] + "," + (mainHeight + m[0]) + ")")
-        .attr("width", w)
-        .attr("height", miniHeight)
-        .attr("class", "mini");
+      .attr("transform", "translate(" + m[3] + "," + (mainHeight + m[0]) + ")")
+      .attr("width", w)
+      .attr("height", miniHeight)
+      .attr("class", "mini");
     var xAxis = d3.svg.axis().scale(x)
-        .orient("bottom");;
+      .orient("bottom");;
     var axis = chart.append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(120,0)")
-        .call(xAxis);
+      .attr("class", "axis")
+      .attr("transform", "translate(120,0)")
+      .call(xAxis);
 
     //main lanes and texts
     main.append("g").selectAll(".laneLines")
-        .data(items)
-        .enter().append("line")
-        .attr("x1", m[1])
-        .attr("y1", function(d) { return y1(d.laneMaxGroup); })
-        .attr("x2", w)
-        .attr("y2", function(d) { return y1(d.laneMaxGroup); })
-        .attr("stroke", "lightgray")
+      .data(items)
+      .enter().append("line")
+      .attr("x1", m[1])
+      .attr("y1", function (d) { return y1(d.laneMaxGroup); })
+      .attr("x2", w)
+      .attr("y2", function (d) { return y1(d.laneMaxGroup); })
+      .attr("stroke", "lightgray")
 
     main.append("g").selectAll(".laneText")
-        .data(lanes)
-        .enter().append("text")
-        .text(function(d) { return d; })
-        .attr("x", -m[1])
-        .attr("y", function(d, i) { return y1(aLaneMaxGroup[i]-aLaneGroups[i].length + .5); })
-        .attr("dy", ".5ex")
-        .attr("text-anchor", "end")
-        .attr("class", "laneText");
+      .data(lanes)
+      .enter().append("text")
+      .text(function (d) { return d; })
+      .attr("x", -m[1])
+      .attr("y", function (d, i) { return y1(aLaneMaxGroup[i] - aLaneGroups[i].length + .5); })
+      .attr("dy", ".5ex")
+      .attr("text-anchor", "end")
+      .attr("class", "laneText");
 
     //mini lanes and texts
     mini.append("g").selectAll(".laneLines")
-        .data(items)
-        .enter().append("line")
-        .attr("x1", m[1])
-        .attr("y1", function(d) { return y2(d.laneMaxGroup); })
-        .attr("x2", w)
-        .attr("y2", function(d) { return y2(d.laneMaxGroup); })
-        .attr("stroke", "lightgray");
+      .data(items)
+      .enter().append("line")
+      .attr("x1", m[1])
+      .attr("y1", function (d) { return y2(d.laneMaxGroup); })
+      .attr("x2", w)
+      .attr("y2", function (d) { return y2(d.laneMaxGroup); })
+      .attr("stroke", "lightgray");
 
     mini.append("g").selectAll(".laneText")
-        .data(lanes)
-        .enter().append("text")
-        .text(function(d) { return d; })
-        .attr("x", -m[1])
-        .attr("y", function(d, i) { return y2(aLaneMaxGroup[i] + .5); })
-        .attr("dy", ".5ex")
-        .attr("text-anchor", "end")
-        .attr("class", "laneText");
+      .data(lanes)
+      .enter().append("text")
+      .text(function (d) { return d; })
+      .attr("x", -m[1])
+      .attr("y", function (d, i) { return y2(aLaneMaxGroup[i] + .5); })
+      .attr("dy", ".5ex")
+      .attr("text-anchor", "end")
+      .attr("class", "laneText");
 
     var itemRects = main.append("g")
-        .attr("clip-path", "url(#clip)");
+      .attr("clip-path", "url(#clip)");
 
     //mini item rects
     mini.append("g").selectAll("miniItems")
-        .data(items)
-        .enter().append("rect")
-        .attr("class", function(d) { return "miniItem" + d.lane + " miniItem"; })
-        .attr("x", function(d) { return x(d.start); })
-        .attr("y", function(d) { return y2(d.group + .5) - 5; })
-        .attr("width", function(d) { return x(d.end - d.start); })
-        .attr("height", 10);
+      .data(items)
+      .enter().append("rect")
+      .attr("class", function (d) { return "miniItem" + d.lane + " miniItem"; })
+      .attr("x", function (d) { return x(d.start); })
+      .attr("y", function (d) { return y2(d.group + .5) - 5; })
+      .attr("width", function (d) { return x(d.end - d.start); })
+      .attr("height", 10);
 
     //mini labels
     mini.append("g").selectAll(".miniLabels")
-        .data(items)
-        .enter().append("text")
-        .text(function(d) { return d.id; })
-        .attr("x", function(d) { return x(d.start); })
-        .attr("y", function(d) { return y2(d.group + .5); })
-        .attr("dy", ".5ex");
+      .data(items)
+      .enter().append("text")
+      .text(function (d) { return d.id; })
+      .attr("x", function (d) { return x(d.start); })
+      .attr("y", function (d) { return y2(d.group + .5); })
+      .attr("dy", ".5ex");
 
     //brush
     var brush = d3.svg.brush()
-        .x(x)
-        .on("brush", display);
+      .x(x)
+      .on("brush", display);
 
     mini.append("g")
-        .attr("class", "x brush")
-        .call(brush)
-        .selectAll("rect")
-        .attr("y", 1)
-        .attr("height", miniHeight - 1);
+      .attr("class", "x brush")
+      .call(brush)
+      .selectAll("rect")
+      .attr("y", 1)
+      .attr("height", miniHeight - 1);
 
     display();
 
     function display() {
-        var rects, labels,
-            minExtent = brush.extent()[0],
-            maxExtent = brush.extent()[1],
-            visItems = items.filter(function(d) { return d.start < maxExtent && d.end > minExtent; });
+      var rects, labels,
+        minExtent = brush.extent()[0],
+        maxExtent = brush.extent()[1],
+        visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent; });
 
-        mini.select(".brush")
-            .call(brush.extent([minExtent, maxExtent]));
+      mini.select(".brush")
+        .call(brush.extent([minExtent, maxExtent]));
 
-        x1.domain([minExtent, maxExtent]);
+      x1.domain([minExtent, maxExtent]);
 
-        //update main item rects
-        rects = itemRects.selectAll("rect")
-            .data(visItems, function(d) { return d.id; })
-            .attr("x", function(d) { return x1(d.start); })
-            .attr("width", function(d) { return x1(d.end) - x1(d.start); });
+      //update main item rects
+      rects = itemRects.selectAll("rect")
+        .data(visItems, function (d) { return d.id; })
+        .attr("x", function (d) { return x1(d.start); })
+        .attr("width", function (d) { return x1(d.end) - x1(d.start); });
 
-        rects.enter().append("rect")
-            .attr("class", function(d) { return "miniItem"; }) // + d.lane; })
-            .attr("x", function(d) { return x1(d.start); })
-            .attr("y", function(d) { return y1(d.group) + 10; })
-            .attr("width", function(d) { return x1(d.end) - x1(d.start); })
-            .attr("height", function(d) { return .8 * y1(1); });
+      rects.enter().append("rect")
+        .attr("class", function (d) { return "miniItem"; }) // + d.lane; })
+        .attr("x", function (d) { return x1(d.start); })
+        .attr("y", function (d) { return y1(d.group) + 10; })
+        .attr("width", function (d) { return x1(d.end) - x1(d.start); })
+        .attr("height", function (d) { return .8 * y1(1); });
 
-        rects.exit().remove();
+      rects.exit().remove();
 
 
-        //update the item labels
-        labels = itemRects.selectAll("text")
-            .data(visItems, function(d) { return d.id; })
-            .attr("x", function(d) { return x1(Math.max(d.start, minExtent) + 2); });
+      //update the item labels
+      labels = itemRects.selectAll("text")
+        .data(visItems, function (d) { return d.id; })
+        .attr("x", function (d) { return x1(Math.max(d.start, minExtent) + 2); });
 
-        labels.enter().append("text")
-            .text(function(d) { return d.id; })
-            .attr("x", function(d) { return x1(Math.max(d.start, minExtent)); })
-            .attr("y", function(d) { return y1(d.group + 0.5); })
-            .attr("text-anchor", "start");
+      labels.enter().append("text")
+        .text(function (d) { return d.id; })
+        .attr("x", function (d) { return x1(Math.max(d.start, minExtent)); })
+        .attr("y", function (d) { return y1(d.group + 0.5); })
+        .attr("text-anchor", "start");
 
-        labels.exit().remove();
+      labels.exit().remove();
 
-        //update axis
-        var brushX = d3.scale.linear()
+      //update axis
+      var brushX = d3.scale.linear()
 
-            .domain([minExtent, maxExtent])
-            .range([0, w]);
-        xAxis = d3.svg.axis().scale(brushX)
-            .orient("bottom");;
-        axis.remove();
-        axis = chart.append("g")
-            .attr("class", "axis")
-            .attr("transform", "translate(120,0)")
-            .call(xAxis);
+        .domain([minExtent, maxExtent])
+        .range([0, w]);
+      xAxis = d3.svg.axis().scale(brushX)
+        .orient("bottom");;
+      axis.remove();
+      axis = chart.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(120,0)")
+        .call(xAxis);
 
     }
-    </script>
+  </script>
 </body>
 
 </html>
