@@ -26,6 +26,11 @@
       stroke: #0eff4a;
       stroke-width: 1.5px;
     }
+
+    .rome {
+      stroke: #0ea7ff;
+      stroke-width: 1.5px;
+    }
   </style>
 </head>
 
@@ -34,7 +39,7 @@
   <script>
 
     var width = 1900;
-    var height = 800;
+    var height = 1600;
     var img_w = 77;
     var img_h = 80;
     var radius = 40;	//圆形半径
@@ -49,37 +54,39 @@
       "nodes": [
         { "myth": "greek", "name": "卡厄斯Chaos", "image": "https://gss3.bdstatic.com/7Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=7ee245212a3fb80e0cd166d10eea4813/b8014a90f603738dd67c4532b81bb051f819ece8.jpg" },
         { "myth": "greek", "name": "盖亚Gaea", "image": "https://gss3.bdstatic.com/7Po3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D220/sign=27de42af033b5bb5bad727fc06d2d523/2e2eb9389b504fc2da88f301e5dde71191ef6dda.jpg" },
-        { "myth": "greek", "name": "乌拉诺斯Uranus", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=de2949f8af0f4bfb8cd099523b741fcd/2fdda3cc7cd98d105dc22a562a3fb80e7bec9046.jpg" },
+        { "myth": "greek", "name": "乌拉诺斯Uranus天王星", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=de2949f8af0f4bfb8cd099523b741fcd/2fdda3cc7cd98d105dc22a562a3fb80e7bec9046.jpg" },
         { "myth": "greek", "name": "其他十二泰坦神", "image": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1378750596,1248140695&fm=26&gp=0.jpg" },
         { "myth": "greek", "name": "独眼巨人", "image": "https://gss2.bdstatic.com/-fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=f3d1cd26d739b6004dce08b1d16b5217/962bd40735fae6cd9d9665a40db30f2443a70fd1.jpg" },
         { "myth": "greek", "name": "百臂巨人", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=8a03acd07b310a55c424d9f28f7e2494/7aec54e736d12f2ec40d98434dc2d5628535688c.jpg" },
-        { "myth": "greek", "name": "克洛诺斯Cronus泰坦神，天神", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D250/sign=e5b472962a7f9e2f74351a0d2f30e962/0b46f21fbe096b63b21b9e2001338744ebf8ac44.jpg" },
+        { "myth": "both", "name": "克洛诺斯Cronus泰坦神，天神萨=杜恩（Saturn）罗马农神", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D250/sign=e5b472962a7f9e2f74351a0d2f30e962/0b46f21fbe096b63b21b9e2001338744ebf8ac44.jpg" },
         { "myth": "greek", "name": "瑞亚Rhea泰坦神，时光女神", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D220/sign=d05c1958f3d3572c62e29bdeba126352/2934349b033b5bb513676e4f37d3d539b700bccb.jpg" },
-        { "myth": "greek", "name": "赫斯提亚Hestia灶神", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=8baa6572c2177f3e0439f45f11a650a2/0bd162d9f2d3572c4bbd6b188113632763d0c393.jpg" },
-        { "myth": "greek", "name": "德墨忒尔Demeters", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=0a90f3fba4c379317d68812fd3ffd078/b90e7bec54e736d15d4ebdf590504fc2d46269e9.jpg" },
-        { "myth": "greek", "name": "赫拉Hera婚姻、生育、保护妇女", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=c1107e64c4fc1e17fdbf8b3772ab913e/d4628535e5dde71112568a84acefce1b9d166138.jpg" },
-        { "myth": "greek", "name": "哈迪斯Hades", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=dddccd227d094b36db921ceb9bf71be4/0b55b319ebc4b745afd884ebc4fc1e178b8215fa.jpg" },
-        { "myth": "greek", "name": "波塞冬Poseidon", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=cd4a578ef0f2b211e42e8248f2bb0205/d833c895d143ad4b0c61773d89025aafa50f06fb.jpg" },
-        { "myth": "greek", "name": "宙斯Zeus", "image": "https://a2.att.hudong.com/11/43/50200014992522154429431188160_s.jpg" },
-
+        { "myth": "both", "name": "赫斯提亚Hestia灶神=维斯塔（Vesta）", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=8baa6572c2177f3e0439f45f11a650a2/0bd162d9f2d3572c4bbd6b188113632763d0c393.jpg" },
+        { "myth": "both", "name": "德墨忒尔Demeters=克瑞斯（Ceres）农业女神", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=0a90f3fba4c379317d68812fd3ffd078/b90e7bec54e736d15d4ebdf590504fc2d46269e9.jpg" },
+        { "myth": "both", "name": "赫拉Hera=Junius六月婚姻、生育、保护妇女", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=c1107e64c4fc1e17fdbf8b3772ab913e/d4628535e5dde71112568a84acefce1b9d166138.jpg" },
+        { "myth": "both", "name": "哈迪斯Hades冥王星（Pluto）", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=dddccd227d094b36db921ceb9bf71be4/0b55b319ebc4b745afd884ebc4fc1e178b8215fa.jpg" },
+        { "myth": "both", "name": "波塞冬Poseidon(尼普顿Neptune海王星)", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=cd4a578ef0f2b211e42e8248f2bb0205/d833c895d143ad4b0c61773d89025aafa50f06fb.jpg" },
+        //13
+        { "myth": "both", "name": "宙斯Zeus=Jupiter木星", "image": "https://a2.att.hudong.com/11/43/50200014992522154429431188160_s.jpg" },
         { "myth": "greek", "name": "墨提斯，智慧与思想女神", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=ebc6c0cbc53d70cf4cfaad0bc0e7b63d/f31fbe096b63f624ff98abf18b44ebf81b4ca37f.jpg" },
         { "myth": "greek", "name": "忒弥斯Themis泰坦神水女神、秩序和正义女神，命运女神之母", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=e5c273ff7ccf3bc7e800caeae93bdd9c/bf096b63f6246b608ef83d86e7f81a4c500fa24a.jpg" },
         { "myth": "greek", "name": "欧律诺墨", "image": "https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=e9c57597d62a283443a6310d638eaed7/50da81cb39dbb6fddbfa80ac0b24ab18962b3792.jpg" },
         { "myth": "greek", "name": "摩涅莫绪涅Mnemosyne记忆女神", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=045c363d5043fbf2c52ca1258845adbd/43a7d933c895d1436f4bf71670f082025aaf07c1.jpg" },
         { "myth": "greek", "name": "勒托Leto泰坦神", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=c02133df32292df597c3ab13840a3b5d/b999a9014c086e06495ac9bb0a087bf40bd1cb54.jpg" },
-        { "myth": "greek", "name": "雅典娜Athena，战争和智慧女神", "image": "https://gss0.bdstatic.com/94o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=eb56f4f0fb36afc30e0c38638b228cf9/203fb80e7bec54e7dec8a32eb5389b504fc26ade.jpg" },
-        { "myth": "greek", "name": "赫尔墨斯Hermes墨丘利，商业、旅者、小偷和畜牧之神", "image": "https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=e50a2aa71bd8bc3ec60801ccbab0c123/279759ee3d6d55fb3b70e9bb6f224f4a21a4ddfd.jpg" },
+        { "myth": "both", "name": "雅典娜Athena=密涅瓦（Minerva），战争和智慧女神", "image": "https://gss0.bdstatic.com/94o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=eb56f4f0fb36afc30e0c38638b228cf9/203fb80e7bec54e7dec8a32eb5389b504fc26ade.jpg" },
+        { "myth": "both", "name": "赫尔墨斯Hermes墨丘利（Mercury）水星，商业、旅者、小偷和畜牧神，信使", "image": "https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=e50a2aa71bd8bc3ec60801ccbab0c123/279759ee3d6d55fb3b70e9bb6f224f4a21a4ddfd.jpg" },
         { "myth": "both", "name": "女猎神戴安娜，阿耳忒弥斯Artemis", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=ecebe2065e4e9258a63481e8a4b9b665/a8ec8a13632762d012cbaedda8ec08fa503dc6df.jpg" },
         { "myth": "greek", "name": "珀耳塞福涅Persephone", "image": "https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=cceca216771ed21b79c929e39555baf9/14ce36d3d539b600718b3c53e350352ac75cb788.jpg" },
+        //23
         { "myth": "both", "name": "阿波罗(Apollo)", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=fef6e71b861001e94e3c130980351cd1/cefc1e178a82b90117aa6dc1788da9773912ef39.jpg" },
-        { "myth": "greek", "name": "赫菲斯托斯火神", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=adff71b708f79052ef1f403834c8b0f7/f9dcd100baa1cd11ffd07084b812c8fcc3ce2d2b.jpg" },
-        { "myth": "both", "name": "战神：阿瑞斯（次子），马尔斯", "image": "https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=e7b33760c0ef76093c0b9e9916e6c4f1/78310a55b319ebc45c0245648926cffc1f1716d0.jpg" },
+        { "myth": "both", "name": "赫菲斯托斯Hephaestus火神=伏尔甘（Vulcan）", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=adff71b708f79052ef1f403834c8b0f7/f9dcd100baa1cd11ffd07084b812c8fcc3ce2d2b.jpg" },
+        { "myth": "both", "name": "战神：阿瑞斯（次子），马尔斯火星三月", "image": "https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=e7b33760c0ef76093c0b9e9916e6c4f1/78310a55b319ebc45c0245648926cffc1f1716d0.jpg" },
         { "myth": "greek", "name": "青春女神：赫柏Hebe", "image": "https://gss2.bdstatic.com/-fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=74ccbaad788b4710ce2ffacafbf5a4c0/1b4c510fd9f9d72aae345291de2a2834359bbbee.jpg" },
         { "myth": "greek", "name": "助产女神：厄勒梯亚", "image": "https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=df2f06d3f4246b607b0eb572d3c37d71/9345d688d43f8794c5e410aed01b0ef41bd53a12.jpg" },
         { "myth": "greek", "name": "毁城女神：厄倪俄", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=ed2b4d3403082838680ddb1280a2ce3c/8cb1cb1349540923170085559658d109b3de49b4.jpg" },
-        { "myth": "both", "name": "阿佛洛狄忒Aphrodite，维纳斯，爱情，美丽，性欲女神", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=dfd54b535eafa40f3cc6c9db935f6472/adaf2edda3cc7cd92135c8b83d01213fb80e91b3.jpg" },
+        { "myth": "both", "name": "阿佛洛狄忒Aphrodite，维纳斯金星，爱情，美丽，性欲女神", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=dfd54b535eafa40f3cc6c9db935f6472/adaf2edda3cc7cd92135c8b83d01213fb80e91b3.jpg" },
+        //30
         { "myth": "both", "name": "厄洛斯Eros，丘比特", "image": "https://gss3.bdstatic.com/7Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=a4880f5fb0119313c743f8b65d036bea/c995d143ad4bd113843b76af58afa40f4afb05bd.jpg" },
-        { "myth": "greek", "name": "狄俄尼索斯Dionysus酒神", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=adf9d48ea64bd11304cdb0346294c332/30adcbef76094b36c9c32b10a8cc7cd98c109dfd.jpg" },
+        { "myth": "both", "name": "狄俄尼索斯Dionysus酒神=巴克斯Bacchus", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=adf9d48ea64bd11304cdb0346294c332/30adcbef76094b36c9c32b10a8cc7cd98c109dfd.jpg" },
         { "myth": "greek", "name": "美惠三女神", "image": "https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=0f983ad0ce1b9d168ac79d67cbe5d3b2/8601a18b87d6277fe7719a3728381f30e924fc5a.jpg" },
         { "myth": "greek", "name": "达那厄Danae", "image": "https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=aa918d3e044f78f0800b9df5410a6d68/00e93901213fb80e2a9072bd31d12f2eb9389412.jpg" },
         { "myth": "greek", "name": "珀耳修斯（Perseus）", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=6d380928daa20cf44690f9d94e322c0b/79f0f736afc379313eef0886e1c4b74542a9119d.jpg" },
@@ -91,12 +98,30 @@
         { "myth": "greek", "name": "克吕墨涅Clymene名望女神", "image": "https://gss0.bdstatic.com/94o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=70cde4ffde2a283443a6310d638eaed7/50da81cb39dbb6fd42f211c40324ab18962b37a2.jpg" },
         { "myth": "greek", "name": "伊阿珀托斯Iapetus死亡之神", "image": "https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=8e610ef27bc6a7efb926af20c5c1c86c/8ad4b31c8701a18beea6b962932f07082838fe4a.jpg" },
         { "myth": "greek", "name": "阿忒拉斯（Atlas）擎天神", "image": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1378750596,1248140695&fm=26&gp=0.jpg" },
-        { "myth": "greek", "name": "普罗米修斯（Prometheus）", "image": "http://img4.imgtn.bdimg.com/it/u=1158262410,2966714608&fm=26&gp=0.jpg" },
+        { "myth": "greek", "name": "普罗米修斯（Prometheus）", "image": "https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=2836242653,1203482261&fm=58&bpow=600&bpoh=419" },
         { "myth": "greek", "name": "厄庇墨透斯（Epimetheus）", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D220/sign=28f76ab65ab5c9ea66f304e1e538b622/b8389b504fc2d56299598c50e61190ef76c66c3d.jpg" },
         { "myth": "greek", "name": "墨诺提俄斯（Menoetius）二代泰坦", "image": "https://gss0.bdstatic.com/94o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=5f10b608aaec8a13141a50e6cf38f6b2/32fa828ba61ea8d3f523e6e3940a304e241f58d7.jpg" },
         { "myth": "greek", "name": "潘多拉Pandora", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=6793a99819d5ad6eaaf963ecb9f05ee6/b7003af33a87e95080a2613012385343fbf2b431.jpg" },
         { "myth": "greek", "name": "阿斯克勒庇俄斯Asclepius医师", "image": "https://gss3.bdstatic.com/7Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=5a7faf66af51f3dec3b2be62acd59722/267f9e2f07082838d859bbb8b899a9014d08f1c2.jpg" },
         { "myth": "greek", "name": "美杜莎", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D220/sign=f826630f15178a82ca3c78a2c602737f/908fa0ec08fa513d5c97f51d366d55fbb2fbd930.jpg" },
+        { "myth": "greek", "name": "普绪克Psyche", "image": "https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=8f6cc5a7f81fbe091c5ec412535b6b0e/c2cec3fdfc039245222f1bde8d94a4c27c1e254d.jpg" },
+        //50
+        { "myth": "greek", "name": "达芙妮（变成月桂树）", "image": "https://gss2.bdstatic.com/-fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=d2e83db178cb0a4685228c3f53589119/b812c8fcc3cec3fd2218783ed588d43f87942753.jpg" },
+        { "myth": "greek", "name": "阿喀琉斯", "image": "https://gss3.bdstatic.com/7Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=28494eb387d6277fe912353e1003780d/5d6034a85edf8db1645ba66c0923dd54564e7445.jpg" },
+        { "myth": "greek", "name": "喀戎,半人马射手座", "image": "https://gss3.bdstatic.com/7Po3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D220/sign=a08b6479b899a9013f355c342d940a58/0d338744ebf81a4ceeb454a4d72a6059242da6dd.jpg" },
+        { "myth": "greek", "name": "忒提斯Thetis", "image": "https://gss1.bdstatic.com/-vo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=1ead61c9ab8b87d65042ac193f334f05/bd315c6034a85edf20002ddb43540923dc5475be.jpg" },
+        { "myth": "greek", "name": "奥利温Orion猎户座", "image": "https://gss3.bdstatic.com/7Po3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=a60540e45a82b2b7a79f3ec20996acd2/aa64034f78f0f736a88294e10955b319eac413d5.jpg" },
+        { "myth": "greek", "name": "卡戎", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=2dbf9babaf345982c58ae29434cf5690/faedab64034f78f04d54952c7b310a55b2191c95.jpg" },
+        { "myth": "greek", "name": "Cerberus（刻耳柏洛斯）", "image": "https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=2379760336,560859968&fm=58&bpow=500&bpoh=392" },
+        { "myth": "both", "name": "玛雅（Maia）五月春天之神", "image": "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=3686695048,925682079&fm=115&gp=0.jpg" },
+        { "myth": "rome", "name": "雅努斯一月", "image": "http://5b0988e595225.cdn.sohucs.com/images/20180610/f075d54bc12e48c38d9c21eb458c8379.jpeg" },
+        { "myth": "greek", "name": "Ganymedes伽倪墨得斯，水瓶座，斟酒童，Gay", "image": "https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D220/sign=7a51d92afa36afc30a0c38678318eb85/0bd162d9f2d3572c68c108368713632762d0c33d.jpg" },
+        //60
+        { "myth": "greek", "name": "海德拉", "image": "http://img2.imgtn.bdimg.com/it/u=2522880700,2351006942&fm=26&gp=0.jpg" },
+        { "myth": "greek", "name": "斯梯克斯（Styx）誓言女神", "image": "https://gss2.bdstatic.com/-fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=208ecef6b3014a90813e41bb914c5e2f/e61190ef76c6a7eff082d962f7faaf51f2de66c9.jpg" },
+        { "myth": "greek", "name": "帕拉斯（Pallas）泰坦神", "image": "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=1378750596,1248140695&fm=26&gp=0.jpg" },
+        { "myth": "both", "name": "Nike=Victoria胜利女神", "image": "https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D220/sign=9f3d0b0951da81cb4ae684cf6267d0a4/f703738da97739128148669cf8198618377ae2e5.jpg" },
+ 
 
       ],
       "edges": [
@@ -157,6 +182,23 @@
         { "source": 44, "target": 46, "relation": "夫妻" },
         { "source": 23, "target": 47, "relation": "父子" },
         { "source": 34, "target": 48, "relation": "斩杀" },
+        { "source": 30, "target": 49, "relation": "夫妻" },//丘比特-普绪克
+        { "source": 23, "target": 50, "relation": "单相思" },//阿波罗-达芙妮（变成月桂树）
+        { "source": 53, "target": 51, "relation": "母子" },//忒提斯-阿喀琉斯
+        { "source": 34, "target": 51, "relation": "父子" },//珀耳修斯-阿喀琉斯
+        { "source": 34, "target": 53, "relation": "夫妻" },
+        { "source": 52, "target": 36, "relation": "师生+误杀" },//喀戎-赫拉克勒斯
+        { "source": 11, "target": 55, "relation": "船工" },
+        { "source": 11, "target": 56, "relation": "看门狗" },
+        { "source": 57, "target": 20, "relation": "母子" },
+        { "source": 13, "target": 59, "relation": "Gay" },
+        { "source": 21, "target": 54, "relation": "情人" },
+        { "source": 12, "target": 54, "relation": "父子" },//波塞冬-奥利温
+        { "source": 36, "target": 60, "relation": "斩杀" },
+        { "source": 38, "target": 62, "relation": "父女" },
+        { "source": 61, "target": 62, "relation": "夫妻" },
+        { "source": 61, "target": 63, "relation": "母子" },
+        { "source": 62, "target": 63, "relation": "父子" },
 
       ]
     }
