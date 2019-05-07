@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Chronological Diagram</title>
+  <script type="text/javascript" src="https://d3js.org/d3.v2.js"></script>
+  <style type="text/css">
+    .chart {
+      shape-rendering: crispEdges;
+    }
+
+    .mini text {
+      font: 9px sans-serif;
+    }
+
+    .main text {
+      font: 12px sans-serif;
+    }
+
+    .miniItem0 {
+      fill: darksalmon;
+      stroke-width: 6;
+    }
+
+    .miniItem1 {
+      fill: darkolivegreen;
+      fill-opacity: .7;
+      stroke-width: 6;
+    }
+
+    .miniItem2 {
+      fill: slategray;
+      fill-opacity: .7;
+      stroke-width: 6;
+    }
+
+    .miniItem {
+      fill: darksalmon;
+      fill-opacity: .5;
+      stroke-width: 0.5;
+      stroke: black;
+    }
+
+    .brush .extent {
+      stroke: gray;
+      fill: dodgerblue;
+      fill-opacity: .365;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-size: 11px;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="text/javascript">
+    //data
+    var lanes = ["时期", "中世纪", "佛罗伦萨画派", "威尼斯画派", "巴洛克", "洛可可", "新古典主义", "浪漫主义", "现实主义", "印象派", "达达主义", "野兽派", "立体派", "超现实主义", "抽象主义"],
+      laneLength = lanes.length,
+      items = [
+        { "lane": 0, "id": "西周", "start": -1000, "end": -771 },
+        { "lane": 0, "id": "春秋", "start": -770, "end": -476 },
+        { "lane": 0, "id": "战国", "start": -475, "end": -221 },
+        { "lane": 0, "id": "文艺复兴", "start": -221, "end": -206 },
+        { "lane": 0, "id": "巴洛克时期", "start": 1500, "end": 1700 },
+        { "lane": 0, "id": "洛可可 宫廷 优雅", "start": 1700, "end": 1800 },
+        { "lane": 0, "id": "新古典主义", "start": 1700, "end": 1900 },
+        { "lane": 0, "id": "蓬勃发展", "start": 620, "end": 900 },
+        { "lane": 0, "id": "现代主义", "start": 1900, "end": 2000 },
+        { "lane": 1, "id": "乔托Giotto", "start": 1266, "end": 1337 },
+        { "lane": 2, "id": "波提切利", "start": 482, "end": 565 },
+        { "lane": 2, "id": "达·芬奇", "start": 1452, "end": 1519 },
+        { "lane": 2, "id": "拉斐尔", "start": 1483, "end": 1520 },
+        { "lane": 2, "id": "米开朗基罗", "start": 1475, "end": 1564 },
+        { "lane": 3, "id": "贝里尼", "start": 1430, "end": 1516 },
+        { "lane": 3, "id": "乔尔乔内", "start": 1477, "end": 1510 },
+        { "lane": 3, "id": "提香", "start": 1490, "end": 1576 },
+        { "lane": 3, "id": "定诺列托", "start": 1869, "end": 1947 },
+        { "lane": 3, "id": "卡拉瓦乔（地上，阴暗，死去的，黑乎乎）", "start": 1571, "end": 1610 },
+        { "lane": 4, "id": "鲁本斯 肉体懒散", "start": 1639, "end": 1640 },
+        { "lane": 4, "id": "伦勃朗 45度光影大师", "start": 1606, "end": 1669 },
+        { "lane": 4, "id": "委拉斯凯兹", "start": 1599, "end": 1660 },
+        { "lane": 5, "id": "布歇", "start": 1703, "end": 1770 },
+        { "lane": 5, "id": "弗拉戈纳尔", "start": 1732, "end": 1806 },
+        { "lane": 6, "id": "大卫", "start": 1748, "end": 1825 },
+        { "lane": 7, "id": "德拉克罗瓦", "start": 858, "end": 860 },
+        { "lane": 8, "id": "库尔贝", "start": 1819, "end": 1877 },
+        { "lane": 8, "id": "米勒", "start": 1814, "end": 1875 },
+        { "lane": 9, "id": "毕沙罗", "start": 1830, "end": 1903 },
+        { "lane": 9, "id": "莫奈", "start": 1840, "end": 1926 },
+        { "lane": 9, "id": "雷诺阿", "start": 1841, "end": 1919 },
+        { "lane": 9, "id": "巴齐耶", "start": 940, "end": 946 },
+        { "lane": 9, "id": "塞尚", "start": 1839, "end": 1906 },
+        { "lane": 9, "id": "德加", "start": 1834, "end": 1971 },
+        { "lane": 9, "id": "莫里索", "start": 1841, "end": 1895 },
+        { "lane": 9, "id": "马奈", "start": 1832, "end": 1883 },
+        { "lane": 9, "id": "卡耶博特", "start": 1848, "end": 1894 },
+        { "lane": 9, "id": "高更", "start": 1848, "end": 1903 },
+        { "lane": 9, "id": "修拉 点点点", "start": 1859, "end": 1891 },
+        { "lane": 9, "id": "梵高", "start": 1853, "end": 1890 },
+        { "lane": 10, "id": "杜尚", "start": 1887, "end": 1968 },
+        { "lane": 11, "id": "马蒂斯", "start": 1014, "end": 1035 },
+        { "lane": 12, "id": "毕加索", "start": 1881, "end": 1973 },
+        { "lane": 13, "id": "达利", "start": 1904, "end": 1989 },
+        { "lane": 14, "id": "蒙德里安", "start": 1066, "end": 1087 },
+
+      ],
+      timeBegin = -1000,
+      timeEnd = 2000;
+  </script>
+  <script type="text/javascript">
+    function groupOverlapForLane(items, lane) {
+      var aGroups = [];
+      var aOtherGroup = [];
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].lane == lane) {
+          aOtherGroup.push(items[i]);
+        }
+      }
+      var hasOverlap;
+      while (aOtherGroup.length > 0) {
+        var aCurrGroup = [];
+        for (var i = 0; i < aOtherGroup.length; i++) {
+          hasOverlap = false;
+          for (var j = 0; j < aCurrGroup.length; j++) {
+            if (aOtherGroup[i].end <= aCurrGroup[j].start || aOtherGroup[i].start >= aCurrGroup[j].end) {//not overlap
+
+            } else {
+              //alert(aOtherGroup[i].id+aCurrGroup[j].id);
+              hasOverlap = true;
+              break;
+            }
+          }
+          if (!hasOverlap) {
+            aOtherGroup[i].group = aGroups.length;
+            aCurrGroup.push(aOtherGroup[i]);
+            aOtherGroup.splice(i, 1);
+            i--;
+          }
+
+
+        }
+        aGroups.push(aCurrGroup);
+      }
+      return aGroups;
+
+    }
+    var groupsLength = 0;
+    var aLaneGroups = [];
+    var aLaneMaxGroup = [];
+    for (var i = 0; i < laneLength; i++) {
+      var aGroups = groupOverlapForLane(items, i);
+      aLaneMaxGroup[i] = aGroups.length + groupsLength;
+      for (var j = 0; j < aGroups.length; j++) {
+
+        for (var k = 0; k < aGroups[j].length; k++) {
+          aGroups[j][k].group += groupsLength;
+
+          aGroups[j][k].laneMaxGroup = aLaneMaxGroup[i];
+        }
+
+      }
+      groupsLength += aGroups.length;
+      aLaneGroups.push(aGroups);
+
+    }
+    var m = [20, 15, 15, 120], //top right bottom left
+      w = 1280 - m[1] - m[3],
+      h = 2000 - m[0] - m[2],
+      miniHeight = groupsLength * 12 + 50,
+      mainHeight = h - miniHeight - 50;
+
+    //scales
+    var x = d3.scale.linear()
+      .domain([timeBegin, timeEnd])
+      .range([0, w]);
+    var x1 = d3.scale.linear()
+      .range([0, w]);
+    var y1 = d3.scale.linear()
+      .domain([0, groupsLength])
+      .range([0, mainHeight]);
+    var y2 = d3.scale.linear()
+      .domain([0, groupsLength])
+      .range([0, miniHeight]);
+
+    var chart = d3.select("body")
+      .append("svg")
+      .attr("width", w + m[1] + m[3])
+      .attr("height", h + m[0] + m[2])
+      .attr("class", "chart");
+
+    chart.append("defs").append("clipPath")
+      .attr("id", "clip")
+      .append("rect")
+      .attr("width", w)
+      .attr("height", mainHeight);
+
+    var main = chart.append("g")
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+      .attr("width", w)
+      .attr("height", mainHeight)
+      .attr("class", "main");
+
+    var mini = chart.append("g")
+      .attr("transform", "translate(" + m[3] + "," + (mainHeight + m[0]) + ")")
+      .attr("width", w)
+      .attr("height", miniHeight)
+      .attr("class", "mini");
+    var xAxis = d3.svg.axis().scale(x)
+      .orient("bottom");;
+    var axis = chart.append("g")
+      .attr("class", "axis")
+      .attr("transform", "translate(120,0)")
+      .call(xAxis);
+
+    //main lanes and texts
+    main.append("g").selectAll(".laneLines")
+      .data(items)
+      .enter().append("line")
+      .attr("x1", m[1])
+      .attr("y1", function (d) { return y1(d.laneMaxGroup); })
+      .attr("x2", w)
+      .attr("y2", function (d) { return y1(d.laneMaxGroup); })
+      .attr("stroke", "lightgray")
+
+    main.append("g").selectAll(".laneText")
+      .data(lanes)
+      .enter().append("text")
+      .text(function (d) { return d; })
+      .attr("x", -m[1])
+      .attr("y", function (d, i) { return y1(aLaneMaxGroup[i] - aLaneGroups[i].length + .5); })
+      .attr("dy", ".5ex")
+      .attr("text-anchor", "end")
+      .attr("class", "laneText");
+
+    //mini lanes and texts
+    mini.append("g").selectAll(".laneLines")
+      .data(items)
+      .enter().append("line")
+      .attr("x1", m[1])
+      .attr("y1", function (d) { return y2(d.laneMaxGroup); })
+      .attr("x2", w)
+      .attr("y2", function (d) { return y2(d.laneMaxGroup); })
+      .attr("stroke", "lightgray");
+
+    mini.append("g").selectAll(".laneText")
+      .data(lanes)
+      .enter().append("text")
+      .text(function (d) { return d; })
+      .attr("x", -m[1])
+      .attr("y", function (d, i) { return y2(aLaneMaxGroup[i] + .5); })
+      .attr("dy", ".5ex")
+      .attr("text-anchor", "end")
+      .attr("class", "laneText");
+
+    var itemRects = main.append("g")
+      .attr("clip-path", "url(#clip)");
+
+    //mini item rects
+    mini.append("g").selectAll("miniItems")
+      .data(items)
+      .enter().append("rect")
+      .attr("class", function (d) { return "miniItem" + d.lane + " miniItem"; })
+      .attr("x", function (d) { return x(d.start); })
+      .attr("y", function (d) { return y2(d.group + .5) - 5; })
+      .attr("width", function (d) { return x(d.end - d.start); })
+      .attr("height", 10);
+
+    //mini labels
+    mini.append("g").selectAll(".miniLabels")
+      .data(items)
+      .enter().append("text")
+      .text(function (d) { return d.id; })
+      .attr("x", function (d) { return x(d.start); })
+      .attr("y", function (d) { return y2(d.group + .5); })
+      .attr("dy", ".5ex");
+
+    //brush
+    var brush = d3.svg.brush()
+      .x(x)
+      .on("brush", display);
+
+    mini.append("g")
+      .attr("class", "x brush")
+      .call(brush)
+      .selectAll("rect")
+      .attr("y", 1)
+      .attr("height", miniHeight - 1);
+
+    display();
+
+    function display() {
+      var rects, labels,
+        minExtent = brush.extent()[0],
+        maxExtent = brush.extent()[1],
+        visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent; });
+
+      mini.select(".brush")
+        .call(brush.extent([minExtent, maxExtent]));
+
+      x1.domain([minExtent, maxExtent]);
+
+      //update main item rects
+      rects = itemRects.selectAll("rect")
+        .data(visItems, function (d) { return d.id; })
+        .attr("x", function (d) { return x1(d.start); })
+        .attr("width", function (d) { return x1(d.end) - x1(d.start); });
+
+      rects.enter().append("rect")
+        .attr("class", function (d) { return "miniItem"; }) // + d.lane; })
+        .attr("x", function (d) { return x1(d.start); })
+        .attr("y", function (d) { return y1(d.group) + 10; })
+        .attr("width", function (d) { return x1(d.end) - x1(d.start); })
+        .attr("height", function (d) { return .8 * y1(1); });
+
+      rects.exit().remove();
+
+
+      //update the item labels
+      labels = itemRects.selectAll("text")
+        .data(visItems, function (d) { return d.id; })
+        .attr("x", function (d) { return x1(Math.max(d.start, minExtent) + 2); });
+
+      labels.enter().append("text")
+        .text(function (d) { return d.id; })
+        .attr("x", function (d) { return x1(Math.max(d.start, minExtent)); })
+        .attr("y", function (d) { return y1(d.group + 0.5); })
+        .attr("text-anchor", "start");
+
+      labels.exit().remove();
+
+      //update axis
+      var brushX = d3.scale.linear()
+
+        .domain([minExtent, maxExtent])
+        .range([0, w]);
+      xAxis = d3.svg.axis().scale(brushX)
+        .orient("bottom");;
+      axis.remove();
+      axis = chart.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(120,0)")
+        .call(xAxis);
+
+    }
+  </script>
+</body>
+
+</html>
