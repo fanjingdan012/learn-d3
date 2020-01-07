@@ -1,0 +1,971 @@
+<template>
+<div class="topdivall">
+<div class="all-tree">
+<com-header :title="titleName"></com-header>
+<section>
+<div class="parent clearFix" style="overflow: auto;background-color: #fff;">
+<div id="tree" class="tree"></div>
+</div>
+</section>
+<div class="nodeColor">
+<ul class="clearFix">
+<li>私募管理人</li>
+<li>股东</li>
+<li>对外投资</li>
+<li>私募备案产品</li>
+</ul>
+<p class="danger">可能有风险的企业为红色</p>
+</div>
+</div>
+<!--第一个弹窗start-->
+<div class="content" v-show="AlertOne">
+<div class="con_top clearFix">
+<div class="fl">{{titleType==5?'相同股东':(titleType==4?'对外投资':'股东')}}(<span>{{listArr.length}}</span>)</div>
+<div class="fr" @click="AlertOne=false">&times;</div>
+</div>
+<div v-if="titleType==5" style="margin-top:10px;">相同股东指的是：该公司的股东的对外投资中，还有哪些是私募管理人。</div>
+<div class="con_center">
+<div class="con_cen_bottom">
+<div class="clearFix con_cen_title">
+<div class="grid-col-7 text-left">{{titleType==5?'私募管理人':(titleType==4?'投资企业':'股东名称')}}</div>
+<div class="grid-col-3 text-center">风险信息</div>
+<div class="grid-col-2 text-center">股比</div>
+</div>
+<div class="clearFix con_cen_text" v-for="item in listArr">
+<div class="grid-col-7 text-left apostrophe">
+<div class="orange" v-if="item.fundflag==1&&item.prodflag==0"></div>
+<div class="blue" v-if="item.prodflag==1&&item.fundflag==0"></div>
+<div class="double" v-if="item.prodflag==1&&item.fundflag==1">
+<div class="dou_one"></div><div class="dou_two"></div>
+</div>
+<span :class="[item.clickflag==1?'color-blue':'']" @click="AlertDetail(item.id,item.clickflag,item.prodflag,item.fundflag,item.shareHolderId)">{{item.fullName}}</span>
+</div>
+<div class="grid-col-3 text-center">
+<span>{{item.riskcount}}</span>条
+</div>
+<div class="grid-col-2 text-center">{{item.proportion && item.proportion=='0' ? '--' : item.proportion}}</div>
+</div>
+</div>
+<div class="con_footer clearFix">
+<div class="fl">
+<div class="orange"></div>
+管理人
+</div>
+<div class="fr">
+<div class="blue"></div>
+私募基金
+</div>
+</div>
+</div>
+</div>
+<!--第一个弹窗end-->
+
+<!--第二个弹窗start-->
+<div class="content" v-show="AlertTwo">
+<div class="con_top clearFix">
+<div class="fl">公司信息</div>
+<div class="fr" @click="AlertTwo=false">&times;</div>
+</div>
+<div class="con_center">
+<div class="con_cen_top clearFix">
+<div class="grid-col-10">
+<router-link :to="{path:'/ManagersDetails',query:{corpid:corpinfo.corpid}}" v-if="corpinfo.corptype==1">
+<div class="apostrophe com_title color-blue">
+{{corpinfo.corpname}}
+</div>
+</router-link>
+<router-link :to="{path:'/ProBaseInfo',query:{prodid:currentClickProdid}}" v-else-if="currentClickProdid">
+<div class="apostrophe com_title color-blue">
+{{corpinfo.corpname}}
+</div>
+</router-link>
+<div class="apostrophe com_title color-gry" v-else>
+{{corpinfo.corpname}}
+</div>
+<div class="com_detail">法定代表人：<span>{{corpinfo.legalpersonname}}</span></div>
+<div class="com_detail">注册资本：<span v-if="corpinfo.registercapital">{{toFix(corpinfo.registercapital)}}万人民币</span><span v-else>--</span></div>
+<div class="com_detail">成立日期：<span>{{corpinfo.founddate|dateFormatYMD}}</span></div>
+<div class="com_detail" v-if="corpinfo.corptype==1">认缴规模：<span>{{toFix(corpinfo.subscribedcapital)}}</span>万</div>
+<div class="com_detail" v-if="!!corpinfo.shareHolderName">相同股东名称：<span>{{corpinfo.shareHolderName}}</span></div>
+</div>
+<div class="grid-col-2 text-center com_mark">{{jugeType(corpinfo.corptype)}}</div>
+</div>
+<div class="con_cen_center clearFix text-center">
+<div v-for="(item,index) in tabArr" class="grid-col-3" :class="[tabValue==index?'select':'']" @click="tabValue=index">{{item}}</div>
+</div>
+<div v-show="tabValue==0">
+<div class="con_cen_bottom">
+<div class="clearFix con_cen_title">
+<div class="grid-col-7 text-left">股东名称</div>
+<div class="grid-col-3 text-center">风险信息</div>
+<div class="grid-col-2 text-center">股比</div>
+</div>
+<div class="clearFix con_cen_text" v-for="item in listArrHold">
+<div class="grid-col-7 text-left apostrophe" :class="[item.clickflag==1?'color-blue':'']" @click="alertTwoClick(item)">
+<div class="orange" v-if="item.fundflag==1&&item.prodflag==0"></div>
+<div class="blue" v-if="item.prodflag==1&&item.fundflag==0"></div>
+<div class="double" v-if="item.prodflag==1&&item.fundflag==1">
+<div class="dou_one"></div><div class="dou_two"></div>
+</div>
+{{item.fullName}}
+</div>
+<div class="grid-col-3 text-center">
+<span>{{item.riskcount}}</span>条
+</div>
+<div class="grid-col-2 text-center">{{item.proportion && item.proportion=='0' ? '--' : item.proportion}}</div>
+</div>
+</div>
+<div class="con_footer clearFix">
+<div class="fl">
+<div class="orange"></div>
+管理人
+</div>
+<div class="fr">
+<div class="blue"></div>
+私募基金
+</div>
+</div>
+</div>
+<div v-show="tabValue==1">
+<div class="con_cen_bottom">
+<div class="clearFix con_cen_title">
+<div class="grid-col-7 text-left">投资企业</div>
+<div class="grid-col-3 text-center">风险信息</div>
+<div class="grid-col-2 text-center">股比</div>
+</div>
+<div class="clearFix con_cen_text" v-for="item in listArrInvest">
+<div class="grid-col-7 text-left apostrophe" :class="[item.clickflag==1?'color-blue':'']" @click="alertTwoClick(item)">
+<div class="orange" v-if="item.fundflag==1&&item.prodflag==0"></div>
+<div class="blue" v-if="item.prodflag==1&&item.fundflag==0"></div>
+<div class="double" v-if="item.prodflag==1&&item.fundflag==1">
+<div class="dou_one"></div><div class="dou_two"></div>
+</div>
+{{item.fullName}}
+</div>
+<div class="grid-col-3 text-center">
+<span>{{item.riskcount}}</span>条
+</div>
+<div class="grid-col-2 text-center">{{item.proportion && item.proportion=='0' ? '--' : item.proportion}}</div>
+</div>
+</div>
+<div class="con_footer clearFix">
+<div class="fl">
+<div class="orange"></div>
+管理人
+</div>
+<div class="fr">
+<div class="blue"></div>
+私募基金
+</div>
+</div>
+</div>
+<div v-show="tabValue==2">
+<div class="con_cen_bottom">
+<div class="clearFix con_cen_title">
+<div class="grid-col-6 text-left">姓名</div>
+<div class="grid-col-6 text-left">职务</div>
+</div>
+<div class="clearFix con_cen_text" v-for="item in listArrMem">
+<div class="grid-col-6 apostrophe">{{item.staffname}}</div>
+<div class="grid-col-6">{{item.position}}</div>
+</div>
+</div>
+</div>
+<div v-show="tabValue==3">
+<div class="con_cen_punish">
+<div class="punish_type" v-if="listArrPunish.court.list.length>0">
+<div class="punish_title"> 法院判决：<span>{{listArrPunish.court.list.length}}</span>条</div>
+<div class="punish_list" v-for="item in listArrPunish.court.list">
+<div class="com_title">{{item.courtname}}</div>
+<div class="com_detail">案件类型：<span>{{item.lawsuittype}}</span></div>
+<div class="com_detail">发布时间：<span>{{item.submittime|dateFormatYMD}}</span></div>
+</div>
+</div>
+<div class="punish_type" v-if="listArrPunish.enforced.list.length>0">
+<div class="punish_title"> 失信人被执行人：<span>{{listArrPunish.enforced.list.length}}</span>条</div>
+<div class="punish_list" v-for="item in listArrPunish.enforced.list">
+<div class="com_detail">{{item.casecode}}</div>
+<div class="com_detail">发布时间：<span>{{item.publishdate|dateFormatYMD}}</span></div>
+<div class="com_detail">执行法院：<span>{{item.courtname}}</span></div>
+<div class="com_detail">执行标的：<span>{{item.gistid}}</span></div>
+</div>
+</div>
+<div class="punish_type" v-if="listArrPunish.admin.list.length>0">
+<div class="punish_title"> 行政处罚：<span>{{listArrPunish.admin.list.length}}</span>条</div>
+<div class="punish_list" v-for="item in listArrPunish.admin.list">
+<div class="com_detail">处罚时间：<span>{{item.publishdate|dateFormatYMD}}</span></div>
+<div class="com_detail">处罚类型：<span>{{item.remark}}</span></div>
+<div class="com_detail">处罚来源：<span>{{item.sourceorgan}}</span></div>
+<div class="com_detail"><a :href="item.url">处罚详情：链接网址</a></div>
+</div>
+</div>
+<div class="punish_type" v-if="listArrPunish.notice.list.length>0">
+<div class="punish_title"> 法院公告：<span>{{listArrPunish.notice.list.length}}</span>条</div>
+<div class="punish_list" v-for="item in listArrPunish.notice.list">
+<div class="com_detail">原告：<span>{{item.party1}}</span></div>
+<div class="com_detail">当事人：<span>{{item.party2}}</span></div>
+<div class="com_detail">公告类型：<span>{{item.bltntypename}}</span></div>
+<div class="com_detail">公告人：<span>{{item.courtname}}</span></div>
+<div class="com_detail">刊登日期：<span>{{item.publishdate|dateFormatYMD}}</span></div>
+</div>
+</div>
+<div class="punish_type" v-if="listArrPunish.fmcreditabnormal!=null">
+<div class="punish_title"> 异常机构：</div>
+<div class="punish_list">
+<div class="com_title">{{listArrPunish.fmcreditabnormal.fullname}}</div>
+<div class="com_detail">异常原因：</div>
+<div class="com_detail">
+{{listArrPunish.fmcreditabnormal.credittip}}
+</div>
+</div>
+</div>
+<div class="punish_type" v-if="listArrPunish.abnormal.list.length>0">
+<div class="punish_title"> 工商异常：<span>{{listArrPunish.abnormal.list.length}}</span>条</div>
+<div class="punish_list" v-for="item in listArrPunish.abnormal.list">
+<div class="com_detail">异常原因：<span>{{item.addreason}}</span></div>
+<div class="com_detail">发现机构：<span>{{item.addorgan}}</span></div>
+<div class="com_detail">加入时间：<span>{{item.adddate|dateFormatYMD}}</span></div>
+<div class="com_detail" v-if="item.removedate==null">移除时间：<span>- -</span></div>
+<div class="com_detail" v-if="item.removedate!=null">移除时间：<span>{{item.removedate|dateFormatYMD}}</span></div>
+</div>
+</div>
+<div class="punish_type" v-if="listArrPunish.court.list.length==0&&listArrPunish.enforced.list.length==0&&listArrPunish.admin.list.length==0&&listArrPunish.notice.list.length==0&&listArrPunish.fmcreditabnormal==null&&listArrPunish.abnormal.list.length==0">
+<div class="punish_title setPadBot text-center"> 暂无风险信息</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!--第二个弹窗end-->
+
+<div class="alert-shadow" v-show="AlertOne||AlertTwo" @click="shadow()"></div>
+</div>
+</template>
+<script>
+import ComHeader from '../common/ComHeader.vue'
+import $ from 'jquery'
+import panzoom from '../../../static/js/jquery.panzoom.js'
+import mousewheel from '../../../static/js/jquery.mousewheel.js'
+let echarts = require('echarts/echarts')
+require('echarts/chart/tree');
+require('echarts/chart/treemap');
+// require('../../../static/js/d3')
+export default {
+name: 'default',
+components: {
+ComHeader
+},
+data () {
+return {
+titleName: '',
+AlertOne:false,//控制第一个弹出框的显示和隐藏
+titleType:'',//4为对外投资，3为股东
+listArr:[],//第一个弹窗的数据
+AlertTwo:false,//控制第二个弹出框的显示和隐藏
+corpinfo:{},//公司详情数据
+tabArr:['股东','投资','主要成员','风险信息'],//类别切换
+tabValue:0,//切换的具体哪个类别:0股东，1投资，2主要成员，3风险信息
+listArrHold:[],//股东数据数组
+listArrInvest:[],//投资数据数组
+listArrMem:[],//成员数组数据
+isZQ: false, //是证券公司 不显示 相同地址 和相同法人
+listArrPunish:{//处罚的数据数组
+admin:{//行政处罚数据
+list:[]
+},
+court:{//法院判决数据
+list:[]
+},
+notice:{//法院公告数据
+list:[]
+},
+enforced:{//被执行人数据
+list:[]
+},
+fmcreditabnormal:{//异常机构
+
+},
+abnormal:{//工商异常
+list:[]
+}
+},
+treeColor: { // 0 : 私募管理人 1 ： 股东 2： 对外投资 3： 私募备案产品
+normal: {
+color: '#FE8C58', // 圆点 节点 颜色 橙色
+label: {
+show: true,
+position: 'bottom',
+formatter: "{b}",
+textStyle: {
+color: '#4883b4',
+fontSize: 12,
+}
+},
+lineStyle: {
+color: '#ccc',
+type: 'curve', // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+}
+},
+emphasis: {
+color: '#4883b4',
+label: {
+show: false
+},
+}
+},
+currentClickProdid:0
+}
+},
+mounted: function () {
+var _this = this;
+if (this.$route.query.types) {
+this.isZQ = true;
+} else {
+this.isZQ = false;
+}
+this.$nextTick(function () {
+
+_this.ajaxHandle();
+
+})
+},
+methods: {
+toFix:function(val){//保留两位小数
+return Math.floor(val*100)/100;
+},
+shadow:function(){//点击阴影部分的事件
+var _this = this;
+if(this.AlertOne){
+this.listArr=[];
+this.AlertOne=false;
+}else if(this.AlertTwo){
+_this.listArrPunish.admin.list=[];
+_this.listArrPunish.court.list=[];
+_this.listArrPunish.notice.list=[];
+_this.listArrPunish.enforced.list=[];
+_this.listArrPunish.abnormal.list=[];
+_this.listArrPunish.fmcreditabnormal={};
+_this.tabValue=0;
+this.AlertTwo=false;
+}
+},
+AlertDetail:function(id,flag,prodflag,fundflag,shareHolderId){//从第一个弹窗跳到第二个弹窗的事件
+var _this = this;
+if(flag==1){
+_this.AlertOne=false;
+_this.AlertTwo=true;
+_this.listArrPunish.admin.list=[];
+_this.listArrPunish.court.list=[];
+_this.listArrPunish.notice.list=[];
+_this.listArrPunish.enforced.list=[];
+_this.listArrPunish.abnormal.list=[];
+_this.listArrPunish.fmcreditabnormal={};
+_this.tabValue=0;
+_this.ajaxAlertTwo(id,prodflag,fundflag,shareHolderId);
+}
+},
+jugeType:function(type){//判断机构类型
+var title='';
+switch (type){
+case 1:
+title="管理人";
+break;
+case 2:
+title="期货";
+break;
+case 3:
+title="券商";
+break;
+case 4:
+title="基金子公司";
+break;
+case 5:
+title="信托";
+break;
+case 6:
+title="银行";
+break;
+case 7:
+title="基金公司";
+break;
+case 8:
+title="上市公司";
+break;
+case 9:
+title="新三板上市公司";
+break;
+case 10:
+title="律师事务所";
+break;
+case 11:
+title="会计事务所";
+break;
+case 12:
+title="保险公司";
+break;
+default:
+title="其他";
+break;
+
+}
+return title;
+
+},
+ajaxAlertOne: function (id,type) {//获取第一个弹出框的信息
+var _this = this;
+this.$http.post(this.BASEURL + 'manager/queryCorpListForFamilyTreeByType',JSON.stringify(
+{
+corpid:id,
+type:type
+}
+)).then(function (response) {
+if (response.body.status == 'success') {
+_this.listArr=response.body.data;
+_this.AlertOne=true;
+}
+}, function (response) {
+});
+},
+alertTwoClick:function(item){
+var _this=this;
+if(item.clickflag==1){
+_this.AlertTwo=false;
+_this.ajaxAlertTwo(item.id,item.prodflag,item.fundflag,item.shareHolderId);
+}
+},
+ajaxAlertTwo:function(id,prodflag,fundflag,shareHolderId){
+var _this = this;
+let param = {
+corpid:id,
+type:0,
+fundflag:fundflag,
+prodflag:prodflag
+};
+if(shareHolderId){
+param.shareHolderId = shareHolderId;
+}
+//查看公司详情和股东情况
+this.$http.post(this.BASEURL + 'manager/showCompanyInfo',JSON.stringify(param)).then(function (response) {
+if (response.body.status == 'success') {
+_this.corpinfo=response.body.data.corpinfo;
+_this.listArrHold=response.body.data.list;
+if(response.body.data.prodflag){
+_this.currentClickProdid = response.body.data.prodid;
+}
+if(shareHolderId) {
+_this.corpinfo.shareHolderName = response.body.data.shareHolder.corpname;
+}
+_this.AlertTwo=true;
+}
+}, function (response) {
+
+});
+
+//查看公司对外投资
+this.$http.post(this.BASEURL + 'manager/showCompanyInfo',JSON.stringify(
+{
+corpid:id,
+type:1
+}
+)).then(function (response) {
+if (response.body.status == 'success') {
+_this.listArrInvest=response.body.data.list;
+}
+}, function (response) {
+
+});
+
+//查看公司主要成员
+this.$http.post(this.BASEURL + 'manager/showCompanyInfo',JSON.stringify(
+{
+corpid:id,
+type:2
+}
+)).then(function (response) {
+if (response.body.status == 'success') {
+_this.listArrMem=response.body.data.list;
+}
+}, function (response) {
+
+});
+
+//查看公司风险详情列表
+this.$http.post(this.BASEURL + 'manager/showCompanyInfo',JSON.stringify(
+{
+corpid:id,
+type:3
+}
+)).then(function (response) {
+if (response.body.status == 'success') {
+_this.listArrPunish.admin.list=response.body.data.negatives;
+_this.listArrPunish.court.list=response.body.data.corplawsuits;
+_this.listArrPunish.notice.list=response.body.data.corpcourts;
+_this.listArrPunish.enforced.list=response.body.data.corpdishonests;
+_this.listArrPunish.fmcreditabnormal=response.body.data.fmcreditabnormal;
+_this.listArrPunish.abnormal.list=response.body.data.abnormal;
+}
+}, function (response) {
+
+});
+},
+returnType: function (obj) {
+var index;
+if (obj.fundflag) {
+index = 0;
+} else if (obj.prodflag) {
+index = 3;
+} else if (obj.investmentflag) {
+index = 2;
+} else if (obj.shareflag) {
+index = 1;
+}
+obj.itemStyle = this.setColorForTree(index);
+if (obj.riskcount) {
+obj.itemStyle.normal.label.textStyle.color = 'red';
+}
+return obj;
+},
+setColorForTree: function (idx) {
+var itemStyle;
+/*
+* 0 私募管理人
+* 1 股东
+* 2 对外投资
+* 3 私募备案产品
+* 其他 原点
+* */
+switch (idx) {
+case 0:
+itemStyle = {
+normal: {
+color: '#FE8C58', // 圆点 节点 颜色
+label: {
+show: true,
+position: 'bottom',
+formatter: '{b}',
+textStyle: {
+color: '#4883b4',
+fontSize: 10,
+}
+},
+lineStyle: {
+color: '#ccc',
+type: 'curve', // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+}
+},
+emphasis: {
+color: '#4883b4',
+label: {
+show: false
+},
+}
+};
+break;
+case 1:
+itemStyle = {
+normal: {
+color: '#FBDE15', // 圆点 节点 颜色
+label: {
+show: true,
+position: 'bottom',
+formatter: "{b}",
+textStyle: {
+color: '#4883b4',
+fontSize: 10,
+}
+},
+lineStyle: {
+color: '#ccc',
+type: 'curve', // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+}
+},
+emphasis: {
+color: '#4883b4',
+label: {
+show: false
+},
+}
+};
+break;
+case 2:
+itemStyle = {
+normal: {
+color: '#00A2E8', // 圆点 节点 颜色#E69E07
+label: {
+show: true,
+position: 'bottom',
+formatter: "{b}",
+textStyle: {
+color: '#4883b4',
+fontSize: 10,
+}
+},
+lineStyle: {
+color: '#ccc',
+type: 'curve', // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+}
+},
+emphasis: {
+color: '#4883b4',
+label: {
+show: false
+},
+}
+};
+break;
+case 3:
+itemStyle = {
+normal: {
+color: '#11A259', // 圆点 节点 颜色
+label: {
+show: true,
+position: 'bottom',
+formatter: "{b}",
+textStyle: {
+color: '#4883b4',
+fontSize: 10,
+}
+},
+lineStyle: {
+color: '#ccc',
+type: 'curve', // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+}
+},
+emphasis: {
+color: '#4883b4',
+label: {
+show: false
+},
+}
+};
+break;
+default:
+itemStyle = {
+normal: {
+color: '#333', // 圆点 节点 颜色
+label: {
+show: true,
+position: 'inside',
+formatter: '{b}',
+textStyle: {
+color: '#000',
+fontSize: 10,
+}
+},
+lineStyle: {
+color: '#ccc',
+type: 'curve', // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+width:'3'
+}
+},
+emphasis: {
+color: '#4883b4',
+label: {
+show: false
+},
+}
+};
+break;
+}
+return itemStyle;
+},
+ajaxHandle: function () {
+var _this = this;
+this.$http.post(this.BASEURL + 'manager/familysearch', JSON.stringify({
+corpid: _this.$route.query.corpid
+})).then(response => {
+var res = response.body;
+if (res.status === 'success') {
+_this.titleName = res.data.corpinfo.corpname;
+var data;
+data = [
+{
+//'name':res.data.corpinfo.corpname, children: [
+'name':res.data.corpinfo.corpname, children: [
+// {
+// name: '对外投资' + '(' + res.data.investMentsCount + ')',type: 4,id: res.data.corpinfo.corpid
+// },
+// {
+// name: '股东' + '(' + res.data.shareHoldersCount + ')',type: 3,id: res.data.corpinfo.corpid
+// },
+]
+}
+];
+// 设置原点的颜色
+data[0].itemStyle = _this.setColorForTree(100);
+if (res.data.investMentsCount>0) {
+var im = {
+name: '对外投资' + '(' + res.data.investMentsCount + ')',type: 4,id: res.data.corpinfo.corpid
+};
+im.clickflag = 1;
+im.itemStyle = _this.setColorForTree(2);
+
+res.data.investMents.forEach(function (val, index) {
+val = _this.returnType(val);
+val.type = 4;
+});
+im.children = res.data.investMents;
+data[0].children.push(im);
+}
+if (res.data.shareHoldersCount>0) {
+var sh = {
+name: '股东' + '(' + res.data.shareHoldersCount + ')',type: 3,id: res.data.corpinfo.corpid
+};
+sh.clickflag = 1;
+sh.itemStyle = _this.setColorForTree(1);
+
+
+sh.children = _this.returnType(res.data.shareHolders);
+res.data.shareHolders.forEach(function (val, index) {
+val = _this.returnType(val);
+val.type = 3;
+});
+sh.children = res.data.shareHolders;
+data[0].children.push(sh);
+}
+var xtdz = {
+name: '相同地址 ' + '(' + res.data.sameAddressCount + ')'
+};
+var xtfr = {
+name: '相同法人' + '(' + res.data.sameLegalPersonCount + ')'
+};
+var xtgd = {
+name: '相同股东' + '(' + res.data.sameShareHoldersCount + ')',type: 5,id: res.data.corpinfo.corpid
+};
+
+if (!_this.isZQ) { // 是证券公司 隐藏 相同地址 相同法人
+if (res.data.sameLegalPersonCount > 0) { //相同法人
+xtfr.children = res.data.sameLegalPerson;
+}
+if (res.data.sameAddressCount > 0) { // 相同地址
+xtdz.children = res.data.sameAddress;
+}
+if (res.data.sameShareHoldersCount > 0) {
+xtgd.children = res.data.sameShareHolders;
+}
+xtdz.itemStyle = _this.setColorForTree(0);
+if(res.data.sameAddressCount>0){
+data[0].children.push(xtdz);
+}
+xtfr.itemStyle = _this.setColorForTree(0);
+if(res.data.sameLegalPersonCount>0){
+data[0].children.push(xtfr);
+}
+
+xtgd.itemStyle = _this.setColorForTree(0);
+if(res.data.sameShareHoldersCount>0){
+xtgd.clickflag = 1;
+data[0].children.push(xtgd);
+}
+// 相同股东，要也能点击
+// if (res.data.sameShareHoldersCount) {
+// data[0].children[4].clickflag = 1;
+// }
+}
+
+// if (res.data.investMentsCount > 0) { // 对外投资
+// res.data.investMents.forEach(function (val, index) {
+// val = _this.returnType(val);
+// val.type = 4;
+// });
+// data[0].children[0].children = res.data.investMents;
+// }
+// if (res.data.shareHoldersCount > 0) { // 股东
+// data[0].children[1].children = _this.returnType(res.data.shareHolders);
+// res.data.shareHolders.forEach(function (val, index) {
+// val = _this.returnType(val);
+// val.type = 3;
+// });
+// data[0].children[1].children = res.data.shareHolders;
+// }
+
+_this.drawTree(data);
+}
+}, response => {
+
+})
+},
+drawTree: function (data) {
+var _this = this;
+// 基于准备好的dom，初始化echarts实例
+let myChart = echarts.init(document.getElementById('tree'));
+myChart.setOption({
+title: {
+text: ''
+},
+toolbox: {
+feature: {
+dataZoom: {
+show: true,
+title: {
+dataZoom: '区域缩放',
+dataZoomReset: '区域缩放后退'
+}
+}
+}
+},
+series: [
+{
+name: '树图',
+type: 'tree',
+orient: 'radial', // vertical horizontal
+rootLocation: {x: 'center', y: 'center'}, // 根节点位置 {x: 100, y: 'center'}
+nodePadding: 1,
+layerPadding: 60,
+symbol: 'circle',
+hoverable: false,
+roam: true,
+symbolSize: 10,
+itemStyle: {
+normal: {
+// color: '#333', // 圆点 节点 颜色 #FF8D59 橘黄色
+label: {
+show: true,
+position: 'bottom',
+//formatter: "{b}",
+textStyle: {
+color: '#4883b4',
+fontSize: 10,
+}
+},
+lineStyle: {
+color: '#ccc',
+type: 'curve', // 'curve'|'broken'|'solid'|'dotted'|'dashed'
+length:'5'
+}
+},
+emphasis: {
+color: '#4883b4',
+label: {
+show: false
+},
+// borderWidth: 0,
+}
+},
+
+data: data
+}
+]
+});
+window.onresize = myChart.resize();
+//var ecConfig = require('echarts/config');
+//myChart.on(ecConfig.EVENT.CLICK, _this.clickFun);
+//console.info(myChart);
+myChart.on('click', _this.clickFun);
+myChart.refresh();
+_this.scaleFun();
+},
+clickFun: function (e) {
+var _this = this;
+if(e.data.clickflag){
+if(e.data.children){
+_this.listArr=[];
+_this.titleType=e.data.type;
+_this.ajaxAlertOne(e.data.id,e.data.type);
+}else{
+_this.listArrPunish.admin.list=[];
+_this.listArrPunish.court.list=[];
+_this.listArrPunish.notice.list=[];
+_this.listArrPunish.enforced.list=[];
+_this.listArrPunish.abnormal.list=[];
+_this.listArrPunish.fmcreditabnormal={};
+_this.tabValue=0;
+_this.ajaxAlertTwo(e.data.id,e.data.prodflag,e.data.fundflag,e.data.shareHolderId);
+}
+}
+},
+scaleFun: function(){
+var $panzoom = $("#tree").panzoom();
+$panzoom.parent().on('mousewheel.focal', function( e ) {
+e.preventDefault();
+var delta = e.delta || e.originalEvent.wheelDelta;
+var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+$panzoom.panzoom('zoom', zoomOut, {
+increment: 0.1,
+animate: false,
+focal: e
+});
+});
+}
+/*scaleFun: function () {
+var slider = {
+//判断设备是否支持touch事件
+touch:('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch,
+slider:document.getElementById('tree'),
+//事件
+events:{
+index:0, //显示元素的索引
+slider:this.slider, //this为slider对象
+//icons:document.getElementById('icons'),
+//icon:this.icons.getElementsByTagName('span'),
+handleEvent:function(event){
+var self = this; //this指events对象
+console.info(event.type)
+if(event.type == 'touchstart'){
+self.start(event);
+}else if(event.type == 'touchmove'){
+self.move(event);
+}else if(event.type == 'touchend'){
+self.end(event);
+}
+
+},
+//滑动开始
+start:function(event){
+var touch = event.targetTouches[0]; //touches数组对象获得屏幕上所有的touch，取第一个touch
+startPos = {x:touch.pageX,y:touch.pageY,time:+new Date}; //取第一个touch的坐标值
+isScrolling = 0; //这个参数判断是垂直滚动还是水平滚动
+this.slider.addEventListener('touchmove',this,false);
+this.slider.addEventListener('touchend',this,false);
+},
+//移动
+move:function(event){
+//当屏幕有多个touch或者页面被缩放过，就不执行move操作
+if(event.targetTouches.length > 1 || event.scale && event.scale !== 1) return;
+var touch = event.targetTouches[0];
+endPos = {x:touch.pageX - startPos.x,y:touch.pageY - startPos.y};
+isScrolling = Math.abs(endPos.x) < Math.abs(endPos.y) ? 1:0; //isScrolling为1时，表示纵向滑动，0为横向滑动
+if(isScrolling === 0){
+event.preventDefault(); //阻止触摸事件的默认行为，即阻止滚屏
+this.slider.className = 'cnt';
+this.slider.style.left = -this.index*600 + endPos.x + 'px';
+}
+},
+//滑动释放
+end:function(event){
+var duration = +new Date - startPos.time; //滑动的持续时间
+if(isScrolling === 0){ //当为水平滚动时
+this.icon[this.index].className = '';
+if(Number(duration) > 10){
+//判断是左移还是右移，当偏移量大于10时执行
+if(endPos.x > 10){
+if(this.index !== 0) this.index -= 1;
+}else if(endPos.x < -10){
+if(this.index !== this.icon.length-1) this.index += 1;
+}
+}
+this.icon[this.index].className = 'curr';
+this.slider.className = 'cnt f-anim';
+this.slider.style.left = -this.index*600 + 'px';
+}
+//解绑事件
+this.slider.removeEventListener('touchmove',this,false);
+this.slider.removeEventListener('touchend',this,false);
+}
+},
+//初始化
+init:function(){
+var self = this; //this指slider对象
+if(!!self.touch) self.slider.addEventListener('touchstart',self.events,false); //addEventListener第二个参数可以传一个对象，会调用该对象的handleEvent属性
+}
+};
+slider.init();
+},*/
+
+}
+}
+</script>
+
+<style scoped src="../../css/family/managerfamily.css">
+
+</style>

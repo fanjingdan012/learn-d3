@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Hello World</title>
+  <script type="text/javascript" src="https://d3js.org/d3.v2.js"></script>
+  </head>
+  <body>
+   <svg width="960" height="600"></svg>
+    <script>
+    	var marge = {top:60,bottom:60,left:60,right:60}//设置边距
+    	var dataset1 = [
+        {portrait:"https://upload.wikimedia.org/wikipedia/commons/e/e9/French_School_Portrait_of_Francis_I_of_France_c._1530.jpg",name:"aaa",father:"",start:100,end:200},
+        {portrait:"https://upload.wikimedia.org/wikipedia/commons/e/e9/French_School_Portrait_of_Francis_I_of_France_c._1530.jpg",name:"bbbb",father:"aaa",start:200,end:300}
+        ];
+        var dataset = [ 250 , 210 , 170 , 130 , 90 ];  //数据（表示矩形的宽度）
+    	var svg = d3.select("svg");//得到svg画布
+    	var g = svg.append("g")//定义一个用来装整个图表的一个分组，并设置他的位置
+    		.attr("transform","translate("+marge.top+","+marge.left+")");
+
+    	var rectHeight = 90;//设置每一个矩形的高度
+      var img_w = 80;
+      var img_h = 80;
+      var radius = 40;
+    	g.selectAll("rect")
+    		.data(dataset1)
+    		.enter()
+    		.append("rect")
+    		.attr("x",function(d,i){//设置左上点的x
+                return d.start;
+            })
+    		.attr("y",function(d,i){//设置左上点的y
+    			return i*rectHeight;
+    		})
+    		.attr("width",function(d){//设置宽
+    			return d.end-d.start;
+    		})
+    		.attr("height",rectHeight-5)//设置长
+    		.attr("fill",function(d,i){
+        //创建圆形图片
+        var defs = svg.append("defs").attr("id", "imgdefs")
+
+        var catpattern = defs.append("pattern")
+          .attr("id", "catpattern" + i)
+          .attr("height", 10)
+          .attr("width", 10)
+
+        catpattern.append("image")
+          .attr("x", - (img_w / 2 - radius))
+          .attr("y", - (img_h / 2 - radius))
+          .attr("width", img_w)
+          .attr("height", img_h)
+          .attr("xlink:href", d.portrait)
+
+        return "url(#catpattern" + i + ")";
+        });//颜色填充
+
+            var text_dx = -20;
+    var text_dy = 20;
+
+            var nodes_text = svg.selectAll(".nodetext")
+      .data(dataset1)
+      .enter()
+      .append("text")
+      .attr("class", "nodetext")
+      .attr("dx", text_dx)
+      .attr("dy", text_dy)
+      .text(function (d) {
+        return d.name;
+      });
+            nodes_text.attr("x", function (d) { return d.start });
+      nodes_text.attr("y", function (d,i) { return i*rectHeight + img_w / 2; });
+
+    //添加连线
+    var svg_edges = svg.selectAll("line")
+              .data(edges)
+              .enter()
+              .append("line")
+              .style("stroke","#ccc")
+              .style("stroke-width",1);
+
+    </script>
+  </body>
+
+  </html>
